@@ -48,8 +48,8 @@ Windows 脚本创建项目内 `.venv`，通过 `.pth` 引用源码，无需下�
 
 ## Research and collaboration
 
-项目调研的权威记录在工作区 `项目调研/2026-10-14_启动调研/`。发布时将本轮调研副本同步至仓库 `docs/research/`，并记录同步日期。
+项目调研的权威记录在工作区 `项目调研/2026-10-14_启动调研/`。本轮调研副本已于 2026-10-14 同步至仓库 `docs/research/`。
 
-见 `docs/architecture.md`、`docs/roadmap.md` 与 `CONTRIBUTING.md`。GitHub Actions 配置已准备，是否通过以远端实际运行结果为准。
+见 `docs/architecture.md`、`docs/roadmap.md` 与 `CONTRIBUTING.md`。首轮 [GitHub Actions](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/38571880362) 已通过：Windows/Ubuntu × Python 3.11/3.13，每组 16 项测试及 demo；对应代码提交 `1c17e8e`。
 
 许可证待四位成员共同确定；当前没有授予开源再分发许可。引用外部代码时需单独遵守其许可证。

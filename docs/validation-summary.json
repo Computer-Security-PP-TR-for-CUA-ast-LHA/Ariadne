@@ -23,8 +23,19 @@
   },
   "limitations": [
     "Oracle contamination root and host-provided rebuilt text",
-    "No live-model or GUI benchmark evaluation",
-    "Remote CI not run",
-    "Python 3.11 not locally tested"
-  ]
+    "No live-model or GUI benchmark evaluation"
+  ],
+  "remote_ci": {
+    "url": "https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/38571880362",
+    "code_commit": "1c17e8e6566f8e8dda95cd7b6d053c6c9ec43df9",
+    "conclusion": "success",
+    "matrix": [
+      "ubuntu-latest / 3.11",
+      "ubuntu-latest / 3.13",
+      "windows-latest / 3.11",
+      "windows-latest / 3.13"
+    ],
+    "tests_per_job": 16,
+    "demo_passed": true
+  }
 }

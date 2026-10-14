@@ -19,4 +19,4 @@
 
 既有 `CUA_Literature_Review_2026-09-25.md` 保留作为历史研究记录；本轮补入 MemLineage、ChronoMem 与 10 月 MemForm，并修正“选择性修复本身即空白”的潜在误读。
 
-负责人已选定插件及仓库名 **Ariadne**，可见性为 **Private**。私有仓库已创建：[Ariadne](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne)。初始代码正在推送，远端 CI 待运行。
+负责人已选定插件及仓库名 **Ariadne**，可见性为 **Private**。私有仓库已创建：[Ariadne](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne)。初始代码已推送；[CI](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/38571880362) 的 Windows/Ubuntu × Python 3.11/3.13 四组检查全部通过。
