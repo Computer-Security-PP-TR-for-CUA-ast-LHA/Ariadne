@@ -3,14 +3,14 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cua-provenance-core"
+name = "ariadne-cua"
 version = "0.1.0"
 description = "Research prototype for persistent provenance and targeted state repair"
 requires-python = ">=3.11"
 dependencies = []
 
 [project.scripts]
-cua-guard-demo = "cua_guard.demo:main"
+ariadne-demo = "cua_guard.demo:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

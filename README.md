@@ -1,6 +1,8 @@
-# Persistent provenance and targeted repair: research prototype
+# Ariadne
 
-插件正式名称由团队负责人选定；当前包名 `cua-provenance-core`、导入名 `cua_guard` 为内部工作名。
+Persistent provenance and targeted repair for computer-use agents.
+
+阿里阿德涅之线：沿来源与版本依赖，定位污染并恢复任务。插件及仓库正式名称为 **Ariadne**，Python 分发名为 `ariadne-cua`；内部导入名保留 `cua_guard`。[GitHub 仓库](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne)设为 Private，供团队协作。
 
 根据 Proposal_Revised 的方向，研究跨会话来源记录与污染状态恢复。当前实现是 **Python 标准库内核 + 确定性机制演示**，不是已经装载到 RedTeamCUA/AgentLAB 的防护产品，没有真实模型 ASR 结果。
 
