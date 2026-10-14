@@ -1,0 +1,23 @@
+{
+  "checked_on": "2026-10-14",
+  "upstreams": [
+    {
+      "repository": "TanqiuJiang/AgentLAB",
+      "url": "https://github.com/TanqiuJiang/AgentLAB",
+      "default_branch": "main",
+      "commit": "36f58e60c36bbd6d5b8e61d50d7db7d9ea7258d7",
+      "commit_date": "2026-06-01T00:28:52Z",
+      "github_license_detection": "MIT",
+      "note": "Revision metadata only; not cloned, installed or reproduced."
+    },
+    {
+      "repository": "OSU-NLP-Group/RedTeamCUA",
+      "url": "https://github.com/OSU-NLP-Group/RedTeamCUA",
+      "default_branch": "main",
+      "commit": "a05b8bd04629e19a9a06bf04f8e0c5b53549d16c",
+      "commit_date": "2026-02-09T08:09:19Z",
+      "github_license_detection": "Apache-2.0",
+      "note": "Revision metadata only; not cloned, installed or reproduced."
+    }
+  ]
+}

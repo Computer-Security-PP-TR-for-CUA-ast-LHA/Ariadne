@@ -1,0 +1,17 @@
+.venv/
+.venv-wsl/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.env
+.env.*
+!.env.example
+.uv-cache/
+runs/
+*.sqlite*
+*.db
+*.log
+vendor/
+vmware_vm_data/

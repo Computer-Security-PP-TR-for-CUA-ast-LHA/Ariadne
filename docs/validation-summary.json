@@ -1,0 +1,30 @@
+{
+  "checked_on": "2026-10-14",
+  "record_type": "summary_of_observed_local_runs",
+  "windows": {
+    "passed": 16,
+    "tests": 16,
+    "python": "3.13.5"
+  },
+  "wsl": {
+    "passed": 16,
+    "python": "3.13.12",
+    "tests": 16,
+    "distribution": "Ubuntu-22.04"
+  },
+  "demo": {
+    "kind": "deterministic_mechanism_demo",
+    "unauthorized_delivered": false,
+    "unrelated_state_preserved": true,
+    "old_copy_retrievable": false,
+    "recovered_local_action": true,
+    "quarantined_versions": 3,
+    "model_calls": 0
+  },
+  "limitations": [
+    "Oracle contamination root and host-provided rebuilt text",
+    "No live-model or GUI benchmark evaluation",
+    "Remote CI not run",
+    "Python 3.11 not locally tested"
+  ]
+}
