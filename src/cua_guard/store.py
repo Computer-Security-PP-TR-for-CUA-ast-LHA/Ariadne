@@ -136,6 +136,20 @@ class ProvenanceStore:
             self._event("supersede", {"old": old_id, "new": new_id})
             return new_id
 
+    def sanitized_replacement(self, old_id: str, content: str, validation: dict) -> str:
+        """Trusted semantic controller supplies validation; provenance stays external.
+
+        Supersession remains auditable without making the new version an active
+        dependency of quarantined data. Validation is evidence, not a proof.
+        """
+        with self.db:
+            old = self.get(old_id)
+            if old["status"] != "quarantined" or validation.get("safe") is not True or validation.get("faithful") is not True:
+                raise ValueError("Quarantine and successful semantic validation required")
+            new_id = self._insert(old["artifact"], content, set(old["origins"]), (), "sanitize")
+            self._event("semantic_supersede", {"old": old_id, "new": new_id, "validation": validation})
+            return new_id
+
     def record_call(self, call_id: str, payload: dict, decision: str) -> None:
         with self.db:
             self.db.execute("INSERT INTO calls VALUES (?,?,?)",
