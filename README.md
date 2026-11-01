@@ -4,6 +4,8 @@ Persistent provenance and targeted repair for computer-use agents.
 
 阿里阿德涅之线：沿来源与版本依赖，定位污染并恢复任务。插件及仓库正式名称为 **Ariadne**，Python 分发名为 `ariadne-cua`；内部导入名保留 `cua_guard`。[GitHub 仓库](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne)设为 Private，供团队协作。
 
+详细的组件复用清单、数据库与标签设计、检测修复流程、benchmark 和桌面接入方案见 [Details.md](Details.md)。
+
 ## 当前方向：复用、集成与补强
 
 **2026-11-01 更新，供四位成员同步项目方向。** 项目面向 CUA 的跨会话持久状态污染，优先复用前人已有的标签、溯源图、权限控制、检测与修复成果，形成统一代码库，再接入 benchmark 和桌面 ChatGPT 做验证。
