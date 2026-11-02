@@ -14,15 +14,26 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
+      - run: python -m pip install -c requirements/recovery-tested.txt -e ".[srr]"
+      - run: python -m pip check
+      - name: Fetch pinned SRR source outside project
+        shell: bash
+        run: |
+          git init "$RUNNER_TEMP/selective-revocation-replay"
+          git -C "$RUNNER_TEMP/selective-revocation-replay" remote add origin https://github.com/aliuyar1234/selective-revocation-replay.git
+          git -C "$RUNNER_TEMP/selective-revocation-replay" fetch --depth 1 origin d7bcb32740156cb985fae0ee93caba35ee45e67e
+          git -C "$RUNNER_TEMP/selective-revocation-replay" checkout --detach FETCH_HEAD
       - run: python -m unittest discover -s tests -v
         env:
           PYTHONPATH: src
+          ARIADNE_SRR_CHECKOUT: ${{ runner.temp }}/selective-revocation-replay
       - run: python -m cua_guard.demo
         env:
           PYTHONPATH: src
       - run: python -m cua_guard.recovery.demo
         env:
           PYTHONPATH: src
+          ARIADNE_SRR_CHECKOUT: ${{ runner.temp }}/selective-revocation-replay
   upstream-tma:
     runs-on: ubuntu-latest
     steps:
@@ -32,6 +43,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - run: python -m pip install -c requirements/recovery-tested.txt -e .
       - name: Fetch pinned MIT upstream (outside project)
         shell: bash
         run: |

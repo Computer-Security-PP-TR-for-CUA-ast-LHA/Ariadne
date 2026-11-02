@@ -6,11 +6,11 @@ Content versions are immutable; status, context and recovery jobs are transactio
 from contextlib import contextmanager
 from dataclasses import asdict, replace
 import json
-import os
 from pathlib import Path
 import sqlite3
 import time
 import uuid
+from filelock import FileLock, Timeout
 
 from .contracts import Edge, RecoveryError, Snapshot, Version, canonical, digest, identity
 from .graph import VersionGraph
@@ -51,35 +51,16 @@ class SQLiteRecoveryStore:
 
     @contextmanager
     def recovery_lock(self, scope):
-        """Per-scope OS lock, released on process death; no expiring unsafe lease.
-
-        Use a local filesystem. Network filesystems/distributed hosts need a real
-        fencing-token backend implementing RecoveryStorePort.
-        """
+        """Upstream cross-platform filelock; local single-writer fencing only."""
         name = self.path + '.' + digest(scope)[:32] + '.lock'
-        with open(name, 'a+b') as lock:
-            lock.seek(0, 2)
-            if lock.tell() == 0:
-                lock.write(b'0')
-                lock.flush()
-            lock.seek(0)
-            try:
-                if os.name == 'nt':
-                    import msvcrt
-                    msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
-                else:
-                    import fcntl
-                    fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except OSError as exc:
-                raise RecoveryError('scope_worker_busy') from exc
-            try:
+        try:
+            with FileLock(name, timeout=0):
                 yield
-            finally:
-                lock.seek(0)
-                if os.name == 'nt':
-                    msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
-                else:
-                    fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+        except Timeout as exc:
+            raise RecoveryError('scope_worker_busy') from exc
+
+    def workflow_path(self, scope):
+        return self.path + '.' + digest(scope)[:32] + '.workflow.sqlite'
 
     @contextmanager
     def _tx(self):

@@ -73,29 +73,6 @@ def snapshot_from_events(scope_id, revision, versions, events, *, coverage, miss
     return snapshot
 
 
-class WriterRegistryBackend:
-    """Replay only explicitly registered PURE writers; never replay tool effects.
-
-    Writers receive sanitized inputs, not the old output. Roots without a writer
-    use an independently supplied repair backend. Registry version is mandatory.
-    """
-    def __init__(self, sanitizer, writers: dict[str, Callable], *, registry_version: str):
-        if not registry_version.strip():
-            raise ValueError('registry_version required')
-        self.sanitizer, self.writers = sanitizer, dict(writers)
-        self.identity = 'writers/' + registry_version + '/' + sanitizer.identity
-
-    def repair(self, old, inputs, task):
-        if old.writer_key is None:
-            return self.sanitizer.repair(old, inputs, task)
-        writer = self.writers.get(old.writer_key)
-        if writer is None:
-            raise RecoveryError('unknown_writer')
-        if not inputs:
-            raise RecoveryError('writer_without_support')
-        return writer(inputs, task)
-
-
 class ManagedContextProjection:
     """Working reference host: retrieval and messages derive from ONE manifest.
 

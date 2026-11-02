@@ -1,0 +1,469 @@
+{
+  "checked_on": "2026-11-02",
+  "checks": [
+    {
+      "name": "DBOS crash/restart/repeated request",
+      "result": "passed",
+      "command": "python scripts/research/qualify_durable.py --engine dbos",
+      "version": "3.4.0"
+    },
+    {
+      "name": "LangGraph crash/restart/repeated request",
+      "result": "passed",
+      "command": "python scripts/research/qualify_durable.py --engine langgraph"
+    },
+    {
+      "name": "DBOS original tests",
+      "result": "5 passed",
+      "command": "DBOS_DATABASE=SQLITE python -m pytest tests/test_dbos.py::test_recovery_workflow tests/test_singleexec.py::test_simple_workflow tests/test_sqlite_threading.py -q -o addopts= -o log_cli=false",
+      "warnings": [
+        "pytest timeout plugin absent: unknown timeout config",
+        "pytest_asyncio default fixture loop scope unset"
+      ]
+    },
+    {
+      "name": "LangGraph original saver tests",
+      "result": "17 passed",
+      "command": "python -m pytest libs/checkpoint-sqlite/tests/test_sqlite.py libs/checkpoint-sqlite/tests/test_writes_task_path_migration.py -q -o addopts= -o asyncio_default_fixture_loop_scope=function"
+    },
+    {
+      "name": "SRR original runtime smoke",
+      "result": "6 passed",
+      "command": "python -m pytest tests/test_runtime_smoke.py -q"
+    },
+    {
+      "name": "pip check",
+      "result": "No broken requirements found"
+    }
+  ],
+  "model_calls": 0,
+  "paid_api_calls": 0,
+  "vendored_third_party_source": false,
+  "notes": [
+    "Wheel hashes describe the tested Windows artifacts, not every platform.",
+    "DBOS is evaluated but is not a runtime dependency.",
+    "SRR project license was not found; original source stays in an external pinned checkout.",
+    "No live CUA or real-model benchmark results are claimed."
+  ],
+  "runtime_packages": {
+    "aiosqlite": {
+      "version": "0.22.1",
+      "license": null,
+      "requires_python": ">=3.9",
+      "tested_wheel_sha256": "21c002eb13823fad740196c5a2e9d8e62f6243bd9e7e4a1f87fb5e44ecb4fceb"
+    },
+    "annotated-types": {
+      "version": "0.8.0",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0"
+    },
+    "anyio": {
+      "version": "4.16.0",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "c66ae634e0b8228396b801741beb3294326d4b6102f7bba4041c0dfb58c29026"
+    },
+    "certifi": {
+      "version": "2026.10.23",
+      "license": "MPL-2.0",
+      "requires_python": ">=3.7",
+      "tested_wheel_sha256": "e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1"
+    },
+    "charset-normalizer": {
+      "version": "3.5.2",
+      "license": "MIT",
+      "requires_python": ">=3.7",
+      "tested_wheel_sha256": "78456a747de8dc58360ffa581f30a002baf5aa28cb262536545e91f113ed7639"
+    },
+    "distro": {
+      "version": "1.9.0",
+      "license": "Apache License, Version 2.0",
+      "requires_python": ">=3.6",
+      "tested_wheel_sha256": "7bffd925d65168f85027d8da9af6bddab658135b840670a223589bc0c8ef02b2"
+    },
+    "filelock": {
+      "version": "4.2.6",
+      "license": "MIT",
+      "requires_python": ">=3.11",
+      "tested_wheel_sha256": "fd7d4fca497bf3e3d0945a13261f8e684f2aef12ce7cf76aef26e13bf7388b88"
+    },
+    "h11": {
+      "version": "0.16.0",
+      "license": "MIT",
+      "requires_python": ">=3.8",
+      "tested_wheel_sha256": "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86"
+    },
+    "httpcore": {
+      "version": "1.0.9",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.8",
+      "tested_wheel_sha256": "2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"
+    },
+    "httpcore2": {
+      "version": "2.16.0",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.11",
+      "tested_wheel_sha256": "5c4358319f2602d984ad93182c9fee5160f22e9da7babdda870a5e7c4e2dc34f"
+    },
+    "httpx": {
+      "version": "0.28.1",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.8",
+      "tested_wheel_sha256": "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"
+    },
+    "httpx2": {
+      "version": "2.16.0",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.11",
+      "tested_wheel_sha256": "fd2c5d7909e8d86fe92d53020c310ca0e4e431b838c207c5754b9bbf0308d49a"
+    },
+    "idna": {
+      "version": "3.20",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.9",
+      "tested_wheel_sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c"
+    },
+    "jinja2": {
+      "version": "3.1.6",
+      "license": null,
+      "requires_python": ">=3.7",
+      "tested_wheel_sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"
+    },
+    "jsonpatch": {
+      "version": "1.39",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "8c1849545b8b245623274b881e18cf5606dc4f11272cde327d3c1f3997181097"
+    },
+    "jsonpointer": {
+      "version": "3.7",
+      "license": "Modified BSD License",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "41005d228d8a6ec517b727d2821b7fa16e6bfc7c695ca3339f8331cccaba3887"
+    },
+    "langchain-core": {
+      "version": "1.7.3",
+      "license": "MIT",
+      "requires_python": "<4.0.0,>=3.10.0",
+      "tested_wheel_sha256": "460c214bf31495d7b7e0a879e408dbfda677fd53fd879da786c1b966a4f6bff6"
+    },
+    "langchain-protocol": {
+      "version": "0.0.20",
+      "license": "MIT",
+      "requires_python": "<4.0.0,>=3.10.0",
+      "tested_wheel_sha256": "3c935e5e46b0f6f9cb52f45ba7cfa53d1b9fa80c82c4a277d47f03e07f7385b1"
+    },
+    "langgraph": {
+      "version": "1.2.19",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "6094a5cbed52a77d8c74c276fcd2056abde7b2836eab1c7a6b74bacbd1a269b3"
+    },
+    "langgraph-checkpoint": {
+      "version": "4.3.1",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "215a826935c8db4d9676e79fd95943e5b3847d78604390898e1d98581cc594e5"
+    },
+    "langgraph-checkpoint-sqlite": {
+      "version": "3.1.3",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "7ef55348754b8415e9b2bd2a9d6a385a2246c667a57ad34a591d4ab884a4b1a0"
+    },
+    "langgraph-prebuilt": {
+      "version": "1.1.1",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "fae17c22562e501940eb7aa052a15c58a431febbabf33f8ad172e1b44354a7e4"
+    },
+    "langgraph-sdk": {
+      "version": "0.4.11",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "6a65be4a8f825966a07317b8e34e3337cd227b9b58b185f0123fd13c3d0116fa"
+    },
+    "langsmith": {
+      "version": "0.14.17",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "0aa2c79936c93c7cea9c55656f05e21cc5da715fecbdbda439d084adc08429be"
+    },
+    "markupsafe": {
+      "version": "3.0.4",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.9",
+      "tested_wheel_sha256": "1f1f9477e174582b0a1b583d60b66e1f2cf5d3fe12cee985e4aedf44766600e5"
+    },
+    "orjson": {
+      "version": "3.13.0",
+      "license": "MPL-2.0 AND (Apache-2.0 OR MIT)",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "4ee06e53b998c71ce3eb93b86222912fdd9dcced685ac64d4525d36fac338ea4"
+    },
+    "ormsgpack": {
+      "version": "1.13.0",
+      "license": "Apache-2.0 OR MIT",
+      "requires_python": ">=3.11",
+      "tested_wheel_sha256": "8ae078104fceb107250d1b792a4c3b72bc9a0e9536c11c4dd0b6cc6ffc44ba9c"
+    },
+    "packaging": {
+      "version": "26.3",
+      "license": "Apache-2.0 OR BSD-2-Clause",
+      "requires_python": ">=3.9",
+      "tested_wheel_sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+    },
+    "pydantic": {
+      "version": "2.14.2",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "7efbf7507b937931cd32a5755acb00ea1cf5ccb1d4e8067a5850d5069e382118"
+    },
+    "pydantic-core": {
+      "version": "2.50.2",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "e5c801bdf3cc92274b8fc2c7023c8751e5ae81260c009ac558ff55ce712a2d45"
+    },
+    "pyyaml": {
+      "version": "6.0.3",
+      "license": "MIT",
+      "requires_python": ">=3.8",
+      "tested_wheel_sha256": "79005a0d97d5ddabfeeea4cf676af11e647e41d81c9a7722a193022accdb6b7c"
+    },
+    "requests": {
+      "version": "2.34.2",
+      "license": "Apache-2.0",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0"
+    },
+    "requests-toolbelt": {
+      "version": "1.0.0",
+      "license": "Apache 2.0",
+      "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+      "tested_wheel_sha256": "cccfdd665f0a24fcf4726e690f65639d272bb0637b9b92dfd91a5568ccf6bd06"
+    },
+    "sniffio": {
+      "version": "1.3.1",
+      "license": "MIT OR Apache-2.0",
+      "requires_python": ">=3.7",
+      "tested_wheel_sha256": "2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"
+    },
+    "sqlite-vec": {
+      "version": "0.1.9",
+      "license": "MIT License, Apache License, Version 2.0",
+      "requires_python": null,
+      "tested_wheel_sha256": "4a28dc12fa4b53d7b1dced22da2488fade444e96b5d16fd2d698cd670675cf32"
+    },
+    "tenacity": {
+      "version": "9.2.1",
+      "license": "Apache-2.0",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "9e56f17539296baab7beabb08b92f6ee3d7be92d8be72d763360677c2ad6580e"
+    },
+    "truststore": {
+      "version": "0.10.5",
+      "license": "MIT",
+      "requires_python": ">= 3.10",
+      "tested_wheel_sha256": "9aaaedaefaf06d8b206278cf8b5012bc897f485a874503501e12d776df78951c"
+    },
+    "typing-extensions": {
+      "version": "4.16.0",
+      "license": "PSF-2.0",
+      "requires_python": ">=3.9",
+      "tested_wheel_sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+    },
+    "typing-inspection": {
+      "version": "0.4.4",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147"
+    },
+    "urllib3": {
+      "version": "2.8.0",
+      "license": "MIT",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3"
+    },
+    "uuid-utils": {
+      "version": "0.19.0",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.10",
+      "tested_wheel_sha256": "b763ae8f23334ccd95d0b81fb19ee418f38f9e80ebfb521f313a9745280bc07c"
+    },
+    "websockets": {
+      "version": "17.4",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.11",
+      "tested_wheel_sha256": "203e42eb77e06f85778a908b34c5ad032f34e98a68ef33920d6685c1e65a9420"
+    },
+    "xxhash": {
+      "version": "4.0.2",
+      "license": "BSD-2-Clause",
+      "requires_python": ">=3.9",
+      "tested_wheel_sha256": "99fec645143af9dc697620aebff07e99388c16d4208a2ee8b6a2a9bb7d68a21b"
+    },
+    "zstandard": {
+      "version": "0.25.0",
+      "license": "BSD-3-Clause",
+      "requires_python": ">=3.9",
+      "tested_wheel_sha256": "1f830a0dac88719af0ae43b8b2d6aef487d437036468ef3c2ea59c51f9d55fd5"
+    }
+  },
+  "sources": {
+    "langgraph": {
+      "commit": "5bd231cbfd913e05ebc662f519eb9a655bc766df",
+      "normalized_file_sha256": {
+        "libs/langgraph/LICENSE": "d9bb52f2e3540d60ff50d8f0f5b6ba649b7fd346948c4c3d086c8afb120763c7",
+        "libs/langgraph/langgraph/pregel/_loop.py": "b122f38f691b41759c350480a481a12200bf19ece0359a5ca2a99febda1f5c64",
+        "libs/checkpoint-sqlite/langgraph/checkpoint/sqlite/__init__.py": "13829d2b3961129e13ee3113a6674bff790181d26e5cae83c3bfabd6cca9074c",
+        "libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py": "2320cc0ee720048b6cc68872c226ea0c9c8b4a9e8a3d17af64477204b6430c03"
+      }
+    },
+    "dbos-transact-py": {
+      "commit": "718d06613d9b7dc4c935e098e4608b6745267760",
+      "normalized_file_sha256": {
+        "LICENSE": "546662b7f6b9fa4770f564fa7d8e63c40595c0643380b1723d6adc55552154d5",
+        "dbos/_core.py": "82b0e87911599dad73c9595999c20582716cf57fea94fa8cc1122e315504ccca",
+        "dbos/_recovery.py": "213c1e607de219a997897dca4019adcf69d7343cec7538efc4e319d2bdef8b49",
+        "dbos/_sys_db_sqlite.py": "5daa0081be6eb9ec0cc39c359aabc267f758e96169804a4848a617e5b507c57f"
+      }
+    },
+    "selective-revocation-replay": {
+      "commit": "d7bcb32740156cb985fae0ee93caba35ee45e67e",
+      "normalized_file_sha256": {
+        "src/recover.py": "a7de53c2d7e6097760a4a0f57a8c99cb7fc24238df007774340f946c7127d4cf",
+        "src/store.py": "b976194b8068a0200176d2c022d3c0568d07d4f223768acd378724eda0a74fe5",
+        "src/schemas.py": "f0c88d6a246e99b61691cc9699cac32138cc780884190fd48ef1fdbebe88c525",
+        "src/ids.py": "379589a753bd08e8156d6590c1a275cb168eae5d4ac9007044ef8d6330e619c4"
+      }
+    }
+  },
+  "line_counts": {
+    "baseline_commit": "2d2d346",
+    "baseline_runtime": {
+      "src/cua_guard/recovery/__init__.py": {
+        "physical": 7,
+        "code": 5
+      },
+      "src/cua_guard/recovery/_srr_worker.py": {
+        "physical": 43,
+        "code": 37
+      },
+      "src/cua_guard/recovery/_tma_worker.py": {
+        "physical": 46,
+        "code": 40
+      },
+      "src/cua_guard/recovery/adapters.py": {
+        "physical": 185,
+        "code": 130
+      },
+      "src/cua_guard/recovery/contracts.py": {
+        "physical": 186,
+        "code": 139
+      },
+      "src/cua_guard/recovery/coordinator.py": {
+        "physical": 88,
+        "code": 78
+      },
+      "src/cua_guard/recovery/execution.py": {
+        "physical": 78,
+        "code": 60
+      },
+      "src/cua_guard/recovery/graph.py": {
+        "physical": 95,
+        "code": 83
+      },
+      "src/cua_guard/recovery/semantic.py": {
+        "physical": 49,
+        "code": 38
+      },
+      "src/cua_guard/recovery/sqlite.py": {
+        "physical": 487,
+        "code": 427
+      },
+      "src/cua_guard/recovery/srr.py": {
+        "physical": 36,
+        "code": 27
+      },
+      "src/cua_guard/recovery/tma.py": {
+        "physical": 46,
+        "code": 31
+      }
+    },
+    "current_runtime": {
+      "src/cua_guard/recovery/adapters.py": {
+        "physical": 162,
+        "code": 115
+      },
+      "src/cua_guard/recovery/contracts.py": {
+        "physical": 187,
+        "code": 140
+      },
+      "src/cua_guard/recovery/coordinator.py": {
+        "physical": 74,
+        "code": 67
+      },
+      "src/cua_guard/recovery/execution.py": {
+        "physical": 78,
+        "code": 60
+      },
+      "src/cua_guard/recovery/graph.py": {
+        "physical": 95,
+        "code": 83
+      },
+      "src/cua_guard/recovery/semantic.py": {
+        "physical": 49,
+        "code": 38
+      },
+      "src/cua_guard/recovery/sqlite.py": {
+        "physical": 468,
+        "code": 411
+      },
+      "src/cua_guard/recovery/srr.py": {
+        "physical": 36,
+        "code": 27
+      },
+      "src/cua_guard/recovery/srr_writer.py": {
+        "physical": 136,
+        "code": 111
+      },
+      "src/cua_guard/recovery/tma.py": {
+        "physical": 46,
+        "code": 31
+      },
+      "src/cua_guard/recovery/workflow.py": {
+        "physical": 105,
+        "code": 79
+      },
+      "src/cua_guard/recovery/_srr_replay_worker.py": {
+        "physical": 94,
+        "code": 77
+      },
+      "src/cua_guard/recovery/_srr_worker.py": {
+        "physical": 43,
+        "code": 37
+      },
+      "src/cua_guard/recovery/_tma_worker.py": {
+        "physical": 46,
+        "code": 40
+      },
+      "src/cua_guard/recovery/__init__.py": {
+        "physical": 7,
+        "code": 5
+      }
+    },
+    "totals": {
+      "baseline": {
+        "physical": 1346,
+        "code": 1095
+      },
+      "current": {
+        "physical": 1626,
+        "code": 1321
+      }
+    },
+    "note": "Adapters count as our code. External package code is not added to a reuse-percentage denominator."
+  }
+}

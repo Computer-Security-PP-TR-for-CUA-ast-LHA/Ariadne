@@ -69,7 +69,7 @@ Persistent provenance and targeted repair for computer-use agents.
 
 下一阶段由四人共同开展 ChatGPT 接入；本轮不再按“Benchmark 两人、ChatGPT 两人”拆组。Details.md 中原两组并行安排属于历史设计，当前阶段顺序与职责以本节为准。
 
-`luowentao` 分支已提供 [定向修复实现与接口 v0.2](docs/recovery/implementation.md)：事务屏障、图闭包/拓扑重建、候选验证、原子发布、双标签回写确认、上下文重建与安全续行；另附 [追加文献与源码审查](docs/recovery/research-extension.md)。运行 `python -m cua_guard.recovery.demo` 可验证离线闭环。接口仍供团队评审，真实图/标签库和 benchmark 尚待联调；未宣称模型效果已验收。
+`luowentao` 分支的默认恢复链已使用 **LangGraph 持久编排、SqliteSaver 检查点、filelock，以及 SRR 原始 writer 重放**，项目层保留隔离/验证/原子发布/双标签 ACK/授权与效果约束。完整 [源码审查、替换依据及运行方法](docs/recovery/reuse-audit.md) 已入库。安装 `pip install -e ".[srr]"` 并设置固定版本 `ARIADNE_SRR_CHECKOUT` 后运行 `python -m cua_guard.recovery.demo`；缺少上游不会静默回退到自写重放器。图协议仍为 v0.2，真实图/标签库和 benchmark 尚待联调。
 
 执行门拒绝首先触发原因诊断：权限不足、污染和未知须区分。图边记录已捕获输入依赖，不自动证明恶意因果。确认污染后保守隔离根及所有已捕获的受影响副本；验证新版本后重建检索视图、上下文与检查点，重新规划并再次经过执行门。失败或证据不足则保持暂停；回滚状态不撤销已发生的外部效果，也不恢复已消耗授权。
 
@@ -109,7 +109,7 @@ bash scripts/bootstrap.sh  # 已有 uv Python 3.13 时离线建 .venv-wsl
 bash scripts/check.sh
 ```
 
-Windows 脚本创建项目内 `.venv`，通过 `.pth` 引用源码，无需下载依赖或 API key。不更改系统 Python。通用开发安装可用 `python -m pip install -e .`，这会获取构建依赖，首次安装需要联网。
+Windows 脚本创建项目内 `.venv`，通过 `.pth` 引用源码，不更改系统 Python。历史原型仍可单独运行；当前恢复模块及全量测试需要先执行 `python -m pip install -e ".[srr]"` 安装固定版本运行依赖，首次安装需要联网，不需要 API key。测试环境约束见 `requirements/recovery-tested.txt`。
 
 ## Modules
 

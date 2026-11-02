@@ -10,7 +10,7 @@ import unittest
 from cua_guard.recovery import RecoveryCoordinator, SQLiteRecoveryStore
 from cua_guard.recovery.contracts import Edge, RecoveryError, RecoveryRequest, Snapshot, Validation, Version, canonical, digest
 from cua_guard.recovery.graph import VersionGraph
-from cua_guard.recovery.adapters import CapturedWriterEvent, DualLabelProjection, JSONGraphAdapter, ManagedContextProjection, WriterRegistryBackend, snapshot_from_events
+from cua_guard.recovery.adapters import CapturedWriterEvent, DualLabelProjection, JSONGraphAdapter, ManagedContextProjection, snapshot_from_events
 from cua_guard.recovery.execution import AuthorizationGrant, Proposal, SafeExecutor
 from cua_guard.recovery.semantic import ModelRepairBackend, ModelRepairValidator
 
@@ -32,6 +32,23 @@ class FixtureBackend:
     def repair(self, old, inputs, task):
         self.calls.append(old.version_id)
         return (old.content.replace('; INJECT', ''),)
+
+
+class WriterRegistryBackend:
+    """Test double retained from the pre-upstream implementation, not shipped."""
+    def __init__(self, sanitizer, writers, *, registry_version):
+        self.sanitizer, self.writers = sanitizer, dict(writers)
+        self.identity = 'fixture-writers/' + registry_version + '/' + sanitizer.identity
+
+    def repair(self, old, inputs, task):
+        if old.writer_key is None:
+            return self.sanitizer.repair(old, inputs, task)
+        writer = self.writers.get(old.writer_key)
+        if writer is None:
+            raise RecoveryError('unknown_writer')
+        if not inputs:
+            raise RecoveryError('writer_without_support')
+        return writer(inputs, task)
 
 
 class FixtureValidator:

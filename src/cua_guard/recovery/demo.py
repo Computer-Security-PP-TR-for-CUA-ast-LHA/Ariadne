@@ -6,6 +6,7 @@ deliberately local to this demo so they cannot be mistaken for a real detector.
 """
 import argparse
 import json
+import os
 from pathlib import Path
 import tempfile
 import time
@@ -14,7 +15,8 @@ import uuid
 from .contracts import Edge, RecoveryRequest, Snapshot, Validation, Version, canonical, digest
 from .sqlite import SQLiteRecoveryStore
 from .coordinator import RecoveryCoordinator
-from .adapters import JSONGraphAdapter, ManagedContextProjection, WriterRegistryBackend
+from .adapters import JSONGraphAdapter, ManagedContextProjection
+from .srr_writer import SRRWriterBackend
 from .execution import AuthorizationGrant, Proposal, SafeExecutor
 
 
@@ -44,12 +46,19 @@ class FixtureValidation:
         return Validation(matches, matches, 'fixture-ground-truth/meeting-time')
 
 
-def run(directory):
+class FixtureWriter:
+    identity = 'offline-copy-writer/1'
+
+    def write(self, kind, inputs, task):
+        return tuple(v.content for v in inputs)
+
+
+def run(directory, checkout):
     store = SQLiteRecoveryStore(Path(directory) / 'recovery.sqlite')
     before = example_snapshot()
     store.seed(before, {'current': ('summary-v1','benign-v1'), 'future': ('dormant-v1',)})
     store.record_call(before.scope_id, 'blocked-call', ('summary-v1',))
-    backend = WriterRegistryBackend(FixtureRepair(), {'copy': lambda inputs, task: tuple(v.content for v in inputs)}, registry_version='fixture/1')
+    backend = SRRWriterBackend(checkout, FixtureRepair(), FixtureWriter(), {'copy':'memory_write'})
     projection = ManagedContextProjection(store)
     graph = JSONGraphAdapter(lambda scope: store.snapshot(scope).to_dict())
     request = RecoveryRequest('incident-001', before.scope_id, 'Return the meeting time and room.',
@@ -78,6 +87,7 @@ def run(directory):
     report = {
         'mode': 'offline_synthetic_mechanism', 'oracle_localization': True,
         'repair_backend': backend.identity, 'model_calls': 0, 'external_tool_calls': 0,
+        'workflow_engine':'langgraph', 'native_replay':backend.last_replay,
         'recovery_outcome': result['outcome'], 'affected_versions': len(result['mapping']),
         'old_versions_still_visible': sum(v['version_id'] in result['mapping'] for v in active),
         'preserved_benign_version': any(v.version_id == 'benign-v1' and v.content == 'Room: 301.' for v in context),
@@ -95,9 +105,12 @@ def run(directory):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, help='Optional synthetic metrics JSON destination')
+    parser.add_argument('--srr-checkout', default=os.environ.get('ARIADNE_SRR_CHECKOUT'), help='Pinned original SRR checkout')
     args = parser.parse_args()
+    if not args.srr_checkout:
+        parser.error('Set ARIADNE_SRR_CHECKOUT or --srr-checkout; no handwritten replay fallback')
     with tempfile.TemporaryDirectory(prefix='ariadne-recovery-') as directory:
-        report = run(directory)
+        report = run(directory, args.srr_checkout)
     text = json.dumps(report, ensure_ascii=False, indent=2) + '\n'
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
