@@ -1,0 +1,102 @@
+{
+  "checked_on": "2026-11-02",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.13.5",
+  "scope": "offline mechanism and upstream adapter qualification; no live-model or GUI evaluation",
+  "checks": [
+    {
+      "command": "python -m unittest discover -s tests -q",
+      "result": "88 passed",
+      "existing_tests": 28,
+      "new_recovery_tests": 49,
+      "actual_upstream_adapter_tests": 11,
+      "environment_variables": [
+        "PYTHONPATH=src",
+        "ARIADNE_TMA_CHECKOUT=<pinned checkout>",
+        "ARIADNE_SRR_CHECKOUT=<pinned checkout>"
+      ]
+    },
+    {
+      "command": "python -m cua_guard.demo",
+      "result": "passed"
+    },
+    {
+      "command": "python -m cua_guard.recovery.demo --output runs/recovery-offline.json",
+      "result": "passed",
+      "metrics": {
+        "mode": "offline_synthetic_mechanism",
+        "oracle_localization": true,
+        "repair_backend": "writers/fixture/1/offline-exact-fixture/1",
+        "model_calls": 0,
+        "external_tool_calls": 0,
+        "recovery_outcome": "ready",
+        "affected_versions": 3,
+        "old_versions_still_visible": 0,
+        "preserved_benign_version": true,
+        "dormant_copy_rebuilt": true,
+        "resumed_once": true,
+        "fixture_task_success": true,
+        "elapsed_seconds": 0.106006,
+        "not_measured": [
+          "real_model_ASR",
+          "real_GUI_recovery",
+          "semantic_detector_accuracy"
+        ]
+      }
+    },
+    {
+      "command": "Draft202012Validator(snapshot-v0.2.schema.json).validate(recovery-v0.2.json); VersionGraph(load_snapshot(fixture))",
+      "result": "passed",
+      "note": "jsonschema used for artifact check only; not a runtime dependency"
+    },
+    {
+      "upstream": "MnemoIR",
+      "command": "python -m pytest tests/test_m1_impact.py tests/test_m3_remediation.py tests/test_replay.py -q",
+      "result": "20 passed",
+      "warning": "environment pytest_asyncio default fixture loop scope unset"
+    }
+  ],
+  "upstream_sources": [
+    {
+      "name": "mem-inv-bench",
+      "commit": "cf3c9a4ca9f0478000d6aa26eb268b875232d34b",
+      "source": "https://github.com/yedidel/mem-inv-bench",
+      "license_observed": "MIT",
+      "use": "actual original parameter recovery and scoped authorization; checksums enforced by worker",
+      "checksums": "sources.lock.json"
+    },
+    {
+      "name": "selective-revocation-replay",
+      "commit": "d7bcb32740156cb985fae0ee93caba35ee45e67e",
+      "source": "https://github.com/aliuyar1234/selective-revocation-replay",
+      "license_observed": "not-found in reviewed checkout",
+      "use": "optional original native planner in external checkout; no source vendored",
+      "checksums": "sources.lock.json"
+    },
+    {
+      "name": "MnemoIR",
+      "commit": "3e83d8337545b9254c1165d69ea84e0016e7de4c",
+      "source": "https://github.com/DheerajPranav/mnemo-ir",
+      "license_observed": "MIT",
+      "use": "review and original offline tests only",
+      "normalized_sha256": {
+        "LICENSE": "c72e14ba179ff7e439cc2a1cf3d97046a0c8194f6ea8527db5b1d085866ae2d2",
+        "sdk/remediation/__init__.py": "cdd50ce6ce4e346a71887132f1ab4034dd1db1b576898671bf122e1d17af9483",
+        "sdk/impact/__init__.py": "ca5927a6c5ff64d5270fff7dae87d7c6796075f4a27447292b2ed4a2221799f2",
+        "sdk/replay/__init__.py": "a0ac5bee3c85ff829310402f24c16887b341e6f439da0f7515b18cb2567c0ee1",
+        "sdk/models/__init__.py": "cfbe88806f45d0f6c94d24d5ff40ed915bbfaf46086c699d1f7607bdf3b88cc1"
+      }
+    }
+  ],
+  "model_calls": 0,
+  "paid_api_calls": 0,
+  "third_party_source_vendored": false,
+  "not_run": [
+    "live-model attack matrix",
+    "real GUI state recovery",
+    "teammate real dual-label-store integration",
+    "teammate real provenance capture integration",
+    "ChatGPT integration"
+  ],
+  "caveat": "Passing deterministic tests is not evidence of semantic detector/repair accuracy or complete provenance capture."
+}

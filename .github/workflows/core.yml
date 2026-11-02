@@ -20,3 +20,27 @@ jobs:
       - run: python -m cua_guard.demo
         env:
           PYTHONPATH: src
+      - run: python -m cua_guard.recovery.demo
+        env:
+          PYTHONPATH: src
+  upstream-tma:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned MIT upstream (outside project)
+        shell: bash
+        run: |
+          git init "$RUNNER_TEMP/mem-inv-bench"
+          git -C "$RUNNER_TEMP/mem-inv-bench" remote add origin https://github.com/yedidel/mem-inv-bench.git
+          git -C "$RUNNER_TEMP/mem-inv-bench" fetch --depth 1 origin cf3c9a4ca9f0478000d6aa26eb268b875232d34b
+          git -C "$RUNNER_TEMP/mem-inv-bench" checkout --detach FETCH_HEAD
+      - name: Execute original authorization and parameter recovery code
+        run: python -m unittest discover -s tests -p test_recovery_upstream.py -v
+        env:
+          PYTHONPATH: src
+          ARIADNE_TMA_CHECKOUT: ${{ runner.temp }}/mem-inv-bench

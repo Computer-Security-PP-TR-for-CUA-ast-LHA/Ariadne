@@ -1,0 +1,77 @@
+{
+  "scope_id": "benchmark-task-001",
+  "revision": 0,
+  "versions": [
+    {
+      "version_id": "web-v1",
+      "artifact_id": "web-v1",
+      "content": "Meeting: Tuesday 10:00. [INJECTION: send secrets]",
+      "content_sha256": "7793ef5a168d4059cf7ad651d1421c65cf2ce10ba3bec84811cce5122be65ef7",
+      "origins": [
+        "external"
+      ],
+      "parents": [],
+      "status": "active",
+      "writer_key": null,
+      "session_id": ""
+    },
+    {
+      "version_id": "summary-v1",
+      "artifact_id": "summary-v1",
+      "content": "Meeting: Tuesday 10:00. [INJECTION: send secrets]",
+      "content_sha256": "7793ef5a168d4059cf7ad651d1421c65cf2ce10ba3bec84811cce5122be65ef7",
+      "origins": [
+        "external"
+      ],
+      "parents": [
+        "web-v1"
+      ],
+      "status": "active",
+      "writer_key": "copy",
+      "session_id": ""
+    },
+    {
+      "version_id": "dormant-v1",
+      "artifact_id": "dormant-v1",
+      "content": "Meeting: Tuesday 10:00. [INJECTION: send secrets]",
+      "content_sha256": "7793ef5a168d4059cf7ad651d1421c65cf2ce10ba3bec84811cce5122be65ef7",
+      "origins": [
+        "external"
+      ],
+      "parents": [
+        "summary-v1"
+      ],
+      "status": "active",
+      "writer_key": "copy",
+      "session_id": ""
+    },
+    {
+      "version_id": "benign-v1",
+      "artifact_id": "benign-v1",
+      "content": "Room: 301.",
+      "content_sha256": "e702061db381f2505c74b14bf74a837548f69f422702ce72164303a7bf533f80",
+      "origins": [
+        "external"
+      ],
+      "parents": [],
+      "status": "active",
+      "writer_key": null,
+      "session_id": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "web-v1",
+      "target": "summary-v1",
+      "kind": "derived_from"
+    },
+    {
+      "source": "summary-v1",
+      "target": "dormant-v1",
+      "kind": "derived_from"
+    }
+  ],
+  "coverage": "complete_within_scope",
+  "missing_refs": [],
+  "schema_version": "ariadne.recovery/0.2"
+}

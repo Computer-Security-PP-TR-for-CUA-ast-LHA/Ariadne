@@ -32,7 +32,7 @@ Persistent provenance and targeted repair for computer-use agents.
 |---|---|
 | 机制原型 | 已有 SQLite 版本/来源账本、依赖查询、执行门、隔离与重建、checkpoint；28 项自动测试已有通过记录 |
 | 模型与实验适配 | 已有 DeepSeek 客户端、语义检测/净化流程代码、AgentLAB Email 适配及 RedTeamCUA 执行包装 |
-| 前人成果复用 | 本地已核查多组上游源码，并开展原始授权/参数恢复接入与离线检查；完整集成代码尚未合入可复现主流程 |
+| 前人成果复用 | `luowentao` 已提供固定版本 TMA 参数恢复与 SRR 原生计划 adapter、恢复组件和离线续行入口；完整真实 benchmark 集成仍待验收 |
 | 完整 benchmark | 尚未完成真实模型端到端评测与完整 GUI 环境验收；没有可报告的真实模型 ASR 或方法优越性结果 |
 | 桌面 ChatGPT | 尚未完成插件/harness 接入及真实场景验收；需先核实宿主提供的工具拦截和上下文管理接口 |
 
@@ -69,7 +69,7 @@ Persistent provenance and targeted repair for computer-use agents.
 
 下一阶段由四人共同开展 ChatGPT 接入；本轮不再按“Benchmark 两人、ChatGPT 两人”拆组。Details.md 中原两组并行安排属于历史设计，当前阶段顺序与职责以本节为准。
 
-`luowentao` 分支的工作入口：[定向修复调研、源码核查与接口 v0.1](docs/recovery/README.md)。接口是供团队评审的提案，尚未宣称完成集成或定版。
+`luowentao` 分支已提供 [定向修复实现与接口 v0.2](docs/recovery/implementation.md)：事务屏障、图闭包/拓扑重建、候选验证、原子发布、双标签回写确认、上下文重建与安全续行；另附 [追加文献与源码审查](docs/recovery/research-extension.md)。运行 `python -m cua_guard.recovery.demo` 可验证离线闭环。接口仍供团队评审，真实图/标签库和 benchmark 尚待联调；未宣称模型效果已验收。
 
 执行门拒绝首先触发原因诊断：权限不足、污染和未知须区分。图边记录已捕获输入依赖，不自动证明恶意因果。确认污染后保守隔离根及所有已捕获的受影响副本；验证新版本后重建检索视图、上下文与检查点，重新规划并再次经过执行门。失败或证据不足则保持暂停；回滚状态不撤销已发生的外部效果，也不恢复已消耗授权。
 

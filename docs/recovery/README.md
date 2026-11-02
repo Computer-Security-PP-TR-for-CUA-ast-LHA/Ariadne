@@ -1,6 +1,11 @@
 # luowentao：定向修复、状态重建与恢复运行
 
-日期：2026-11-02。状态：调研与接口提案；尚未成为团队已确认协议，也不是完成的恢复实现。
+日期：2026-11-02。状态：已完成可运行的恢复组件、标准库参考宿主和离线故障测试；真实标签库/图/benchmark 联调及模型效果验收待完成。接口 v0.2 供团队评审，尚未宣称团队已确认。
+
+- **[当前实现、运行入口与 v0.2 团队交接](implementation.md)**
+- **[本轮追加调研与复用选择](research-extension.md)**
+- [可执行 v0.2 图夹具](fixtures/recovery-v0.2.json) / [JSON Schema](snapshot-v0.2.schema.json)
+- [本轮实测记录](implementation-validation.json)
 
 - [论文、源码审查与复用选择](literature-and-reuse.md)
 - [与标签库、溯源图和运行器的接口 v0.1](interface-v0.1.md)
@@ -8,13 +13,13 @@
 - [最小交接图及预期计划](fixtures/minimal-recovery.json)
 - [上游 memory-rollback 行为探针](../../scripts/research/probe_memory_rollback.py)
 
-## 本轮结论
+## 前轮调研记录
 
 优先评估 **SRR 的持久后代撤销/写入事件重放**与 **memory-rollback 的类型化图/恢复规划**，两者比纯上下文净化更贴近本模块。AgentSentry 补充边界诊断与上下文净化；TMA-NM 只承担具有独立授权证据的参数恢复。不能把这些异构方法简单串起来就宣称完成原方法复现。
 
 本轮实际运行：Ariadne 原有 28 项测试与 demo；SRR 原始 runtime smoke 的 6 项测试；memory-rollback 图结构自检和 4 项行为探针；已有本地 TMA 接入实验的 6 个检查。没有调用真实模型、部署大模型或启动付费 API，没有生成真实 ASR 或完整 benchmark 结果。
 
-## 可独立提交的实现顺序
+## 原实施计划（当前完成范围以 implementation.md 为准）
 
 | 交付 | 内容 | 验收 |
 |---|---|---|
