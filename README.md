@@ -56,9 +56,9 @@ Persistent provenance and targeted repair for computer-use agents.
 
 ## 本轮框架与四人分工
 
-![Ariadne：双份持久标签、溯源图与定向恢复闭环](docs/assets/architecture.png)
+![Ariadne：双份持久标签、溯源图与定向恢复闭环](docs/assets/architecture-integrated.png)
 
-这是基于 proposal 扩展的**目标架构**，不表示所有能力已实现。保留持久标签库、面向定向修复的溯源图和溯源定向修复三块核心，补充恢复调度、检索/上下文重建、重新授权和效果验证。图源生成脚本见 [draw_architecture.py](scripts/draw_architecture.py)；图片为 PNG，无需 Mermaid 渲染。
+这是基于 proposal 扩展的**目标架构**，不表示所有能力已实现。保留持久标签库、面向定向修复的溯源图和溯源定向修复三块核心，补充恢复调度、检索/上下文重建、重新授权和效果验证。图源生成脚本见 [draw_integrated_architecture.py](scripts/draw_integrated_architecture.py)；图片为 PNG，无需 Mermaid 渲染；另附 [SVG 矢量版](docs/assets/architecture-integrated.svg)。
 
 | 成员 / 模块 | 本轮职责 | 交接内容 |
 |---|---|---|
