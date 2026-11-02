@@ -7,7 +7,15 @@ name = "ariadne-cua"
 version = "0.1.0"
 description = "Research prototype for persistent provenance and targeted state repair"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "langgraph==1.2.19",
+    "langgraph-checkpoint==4.3.1",
+    "langgraph-checkpoint-sqlite==3.1.3",
+    "filelock==4.2.6",
+]
+
+[project.optional-dependencies]
+srr = ["PyYAML==6.0.3", "Jinja2==3.1.6"]
 
 [project.scripts]
 ariadne-demo = "cua_guard.demo:main"
