@@ -34,6 +34,37 @@
     {
       "name": "pip check",
       "result": "No broken requirements found"
+    },
+    {
+      "name": "Clean checkout installed wheel full suite",
+      "result": "98 passed, 0 skipped",
+      "seconds": 60.558,
+      "command": "python -m unittest discover -s tests -q",
+      "environment": "Windows Python 3.13.5; fresh venv; no PYTHONPATH; both pinned SRR and TMA checkout env vars set"
+    },
+    {
+      "name": "Clean installed wheel recovery demo",
+      "result": "ready; old visible=0; benign preserved; dormant rebuilt; resumed once",
+      "command": "python -m cua_guard.recovery.demo",
+      "model_calls": 0
+    },
+    {
+      "name": "Wheel build and fresh dependency installation",
+      "result": "passed; pip check clean",
+      "sha256": "c45da1b3f9dd66b79718d5d56acca52a0def90039f4b6b31c9c761fb7c3b647c"
+    },
+    {
+      "name": "GitHub Actions implementation commit",
+      "result": "5 jobs passed",
+      "url": "https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/41451944312",
+      "matrix": [
+        "Windows Python 3.11",
+        "Windows Python 3.13",
+        "Ubuntu Python 3.11",
+        "Ubuntu Python 3.13",
+        "TMA original code integration"
+      ],
+      "note": "Main matrix enables SRR; TMA tests run separately. Local clean wheel suite enables both without skips."
     }
   ],
   "model_calls": 0,
@@ -465,5 +496,6 @@
       }
     },
     "note": "Adapters count as our code. External package code is not added to a reuse-percentage denominator."
-  }
+  },
+  "validated_implementation_commit": "e88ecf512a8b13d0c66ca7c633d37587d5a6b727"
 }

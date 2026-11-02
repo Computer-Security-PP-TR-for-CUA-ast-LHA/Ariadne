@@ -142,4 +142,6 @@ Windows 脚本创建项目内 `.venv`，通过 `.pth` 引用源码，不更改�
 
 团队流程见 [CONTRIBUTING.md](CONTRIBUTING.md)。已有 [PR #1 的 CI](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/41052088365) 通过 Windows/Ubuntu × Python 3.11/3.13 四组检查，覆盖当时的 28 项测试与机制演示；这不代表完整安全效果评测通过。
 
+`luowentao` 的通用实现替换已通过 [五项跨平台 CI](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/41451944312)，干净安装包全量测试 98 项通过、无跳过。源码选型、默认 LangGraph/SRR 接入、复用边界和可复现记录见 [复用替换审查](docs/recovery/reuse-audit.md)。
+
 许可证待四位成员共同确定；当前没有授予开源再分发许可。引用外部代码时需单独遵守其许可证。

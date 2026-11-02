@@ -90,3 +90,13 @@ python -m unittest discover -s tests -v
 旧 v0.2 未完成 job 不原地改用新引擎：算法身份变化会触发 `request_id_conflict`。先完成旧版本事件，或在隔离快照上由宿主显式迁移；禁止清除 owner 或回滚效果账本来“解决”冲突。历史工作流 checkpoint 不能当作继续执行的授权。
 
 可复现比较探针：安装研究依赖 `dbos==3.4.0` 后运行 `python scripts/research/qualify_durable.py --engine dbos`；LangGraph 对应 `--engine langgraph`。两者均检查已完成步骤一次、被中断步骤两次、重复完成请求无额外调用。该探针不代表吞吐量、分布式保证或真实攻击防御效果。
+
+## 6. 最终验证
+
+实现提交 `e88ecf512a8b13d0c66ca7c633d37587d5a6b727` 从干净 worktree 构建 wheel，再安装到新的 Python 3.13.5 环境；不设置 `PYTHONPATH`，确认导入自安装包，启用两个固定上游 checkout。**98 项测试通过，无跳过，耗时 60.558 秒**。四个真实进程终止窗口、一对多 writer 输出、失败重试、配置变更拒绝及旧安全契约均在其中；`pip check` 无冲突。
+
+在仓库目录以外运行安装包 demo：原始 SRR writer replay 被调用，修复后旧版本可见数为 0，正常版本保留，休眠副本重建，恢复执行一次。它使用合成净化/生成器，模型调用和外部工具调用均为 0。
+
+[GitHub Actions](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/41451944312) 的五个任务全部通过：Windows/Ubuntu × Python 3.11/3.13 加单独 TMA 原始代码接入测试。主矩阵启用 SRR、单独 job 启用 TMA；没有把主矩阵跳过的 TMA 项当作通过。另有本轮原始 LangGraph 17 项、DBOS 5 项、SRR 6 项测试与两个引擎的真实崩溃比较探针通过，具体命令见锁文件。
+
+真实团队标签库/图后端、生产宿主缓存和真实模型/GUI benchmark 尚待联调，当前结果不能解释为真实攻击成功率或端到端生产验收。
