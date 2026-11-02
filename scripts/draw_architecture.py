@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--font', required=True)
 args = parser.parse_args()
 S = 2
-im = Image.new('RGB', (1500*S, 820*S), '#f8fafc')
+im = Image.new('RGB', (1500*S, 850*S), '#f8fafc')
 d = ImageDraw.Draw(im)
 NAVY, BLUE, TEAL, ORANGE, GRAY = '#17324d', '#28669b', '#117c83', '#b95926', '#51657a'
 
@@ -81,8 +81,8 @@ text(970,278,'拒绝 / 可疑 → 暂停诊断',18,ORANGE)
 arrow([(1470,680),(1486,680),(1486,158),(870,158),(870,180)],ORANGE,2)
 arrow([(1130,725),(1130,765),(202,765),(202,725)],ORANGE,2)
 arrow([(582,765),(582,725)],ORANGE,2)
-text(620,746,'提交修复：账本状态 + 新版本 + 图中依赖与审计映射',18,ORANGE,True)
-text(30,786,'本轮：四人共同完成复用、实现与 Benchmark；下一阶段：共同接入 ChatGPT。',20,GRAY)
+text(750,790,'提交修复：账本状态 + 新版本 + 图中依赖与审计映射',18,ORANGE,True)
+text(30,826,'本轮：四人共同完成复用、实现与 Benchmark；下一阶段：共同接入 ChatGPT。',20,GRAY)
 out=Path(__file__).resolve().parents[1]/'docs/assets/architecture.png'
 out.parent.mkdir(parents=True,exist_ok=True)
 im.save(out,optimize=True)
