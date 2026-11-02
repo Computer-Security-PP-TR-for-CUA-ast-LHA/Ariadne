@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-02",
+  "timezone": "Asia/Shanghai",
+  "scope": "source review and offline mechanism checks only",
+  "sources": [
+    {
+      "name": "memory-rollback",
+      "paper_or_author_page": "https://arxiv.org/abs/2608.10502v2",
+      "repository": "https://github.com/xiaoqi-7/memory-rollback.git",
+      "commit": "713724491b9bbc6e55f0f9d8723da0eb0766ced7",
+      "tracked_clean": true,
+      "project_license_observed": "not-found",
+      "license_note": "Observation of this checkout only; not a legal authorization decision.",
+      "git_blob_sha256": {
+        "methods/ours/graph_schema.py": "f69181ddf919d7fa3ff872ecfd44f663377539a60ac622c221f2aa6bbb7ca392",
+        "methods/ours/affected_subgraph.py": "ac26431c9f3727893b4724f3cd970229fae455b80e63f193346f0fcdad1858fc",
+        "methods/ours/support_checker.py": "f3f1ea2eeaa0c902b61de5a6b2ac68634ac5d57a6a303690e3de4dabb4a4e8d8",
+        "methods/ours/rollback_optimizer.py": "e874ecc804896bdffafb65fa5ab948f3c92070b7b151e8db8a5593262d245472",
+        "methods/ours/rollback_executor.py": "1b01f02e539f8b0887d8b6093509362b3729c7919d6b952d565bde854264bf97",
+        "methods/ours/selective_replay.py": "65e68c0dfa217bc6b4614898c82a4446dda64c0d2df2c85efd4f28d50141df9d"
+      }
+    },
+    {
+      "name": "selective-revocation-replay",
+      "paper_or_author_page": "https://aliuyar.dev/research/selective-revocation-and-replay/",
+      "repository": "https://github.com/aliuyar1234/selective-revocation-replay.git",
+      "commit": "d7bcb32740156cb985fae0ee93caba35ee45e67e",
+      "tracked_clean": true,
+      "project_license_observed": "not-found",
+      "license_note": "Observation of this checkout only; not a legal authorization decision.",
+      "git_blob_sha256": {
+        "src/recover.py": "a7de53c2d7e6097760a4a0f57a8c99cb7fc24238df007774340f946c7127d4cf",
+        "src/schemas.py": "f0c88d6a246e99b61691cc9699cac32138cc780884190fd48ef1fdbebe88c525",
+        "src/store.py": "b976194b8068a0200176d2c022d3c0568d07d4f223768acd378724eda0a74fe5",
+        "tests/test_runtime_smoke.py": "8339b62fcca06e841379097d725e4c77e78036779789dbe6e0cf334350c2ba48",
+        "pyproject.toml": "17cda990c9089af032713cda13fc55656d243c9806fddde411c0a479ca5e1162"
+      }
+    },
+    {
+      "name": "AgentSentry",
+      "paper_or_author_page": "https://arxiv.org/abs/2602.22724v2",
+      "repository": "https://github.com/CyberGuardianAI/AgentSentry.git",
+      "commit": "6dc71c9e0968b0195fbe0f633cccca93260b279d",
+      "tracked_clean": true,
+      "project_license_observed": "not-found",
+      "license_note": "Observation of this checkout only; not a legal authorization decision.",
+      "git_blob_sha256": {
+        "pi_detector.py": "f193e39576dbe722b4162de46420748c7987a3181ed0818a164e61dad0cf42ac",
+        "agentsentry_integration.py": "3448d5ed52619fa1d0582150f5197ca030b9619e853beb8b113e42e5b7c37460",
+        "agentsentry_profiles.py": "d5b9db5b19d502be8965d7e97a69028fdcffaa7e1fb8d69313e514ba3d02bab6"
+      }
+    },
+    {
+      "name": "mem-inv-bench",
+      "paper_or_author_page": "https://arxiv.org/abs/2606.24322",
+      "repository": "https://github.com/yedidel/mem-inv-bench.git",
+      "commit": "cf3c9a4ca9f0478000d6aa26eb268b875232d34b",
+      "tracked_clean": true,
+      "project_license_observed": "MIT",
+      "license_note": "Observation of this checkout only; not a legal authorization decision.",
+      "git_blob_sha256": {
+        "code/scoped_authorization.py": "34ab1780ff7ed83b3a034a1b5ff51dac526ac2a85072d8f6eb848bf4c74e8b22",
+        "code/recovery_catalog.py": "db1dbb9148c0152b67b82cb1bd176407d2b7e049008ccf829e88c91db285bb16",
+        "LICENSE": "8a533b573465c7e1109de11bd92fbdddce2c3ecd86a89d6e6f5edf75b5460431"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "ariadne_existing_tests",
+      "command": ".venv/Scripts/python.exe -m unittest discover -s tests -v",
+      "result": "28 passed",
+      "environment": "project venv"
+    },
+    {
+      "name": "ariadne_demo",
+      "command": ".venv/Scripts/python.exe -m cua_guard.demo",
+      "result": "passed; oracle root and host-provided clean rebuild"
+    },
+    {
+      "name": "srr_runtime_smoke",
+      "cwd": "<SRR_CHECKOUT>",
+      "command": "python -m pytest tests/test_runtime_smoke.py -q",
+      "result": "6 passed in 2.18s",
+      "backend": "heuristic",
+      "warnings": [
+        "pytest_asyncio unset default loop scope (environment warning)"
+      ]
+    },
+    {
+      "name": "memory_rollback_graph_self_check",
+      "cwd": "<MEMORY_ROLLBACK_CHECKOUT>",
+      "command": "python -m methods.ours.graph_schema",
+      "result": "passed"
+    },
+    {
+      "name": "memory_rollback_characterization",
+      "command": "python scripts/research/probe_memory_rollback.py --upstream <MEMORY_ROLLBACK_CHECKOUT>",
+      "result": "4 expected behaviors observed",
+      "observations": [
+        "derive/support descendants reached",
+        "sequence-only chain excluded",
+        "missing root silently skipped after warning",
+        "unbacked claim preserved by upstream default"
+      ],
+      "security_acceptance": false
+    },
+    {
+      "name": "tma_existing_local_integration",
+      "command": ".venv/Scripts/python.exe scripts/demo_reused_authority.py",
+      "result": "6 checks passed",
+      "availability": "pre-existing untracked local experiment, not shipped in this commit",
+      "limitations": [
+        "synthetic authorities",
+        "no real tools",
+        "no semantic cleansing"
+      ]
+    }
+  ],
+  "research_python": {
+    "version": "3.13.5",
+    "implementation": "CPython"
+  },
+  "model_calls": 0,
+  "paid_api_calls": 0,
+  "third_party_code_vendored": false,
+  "not_run": [
+    "live-model benchmarks",
+    "complete SRR matrix",
+    "full memory-rollback experiments",
+    "AgentSentry end-to-end",
+    "GUI experiments"
+  ],
+  "unverified_author_artifacts": [
+    "MemLineage",
+    "ChronoMem",
+    "ACRFence",
+    "RecoverAgent"
+  ]
+}
