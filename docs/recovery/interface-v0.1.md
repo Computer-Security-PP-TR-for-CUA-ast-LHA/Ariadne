@@ -165,7 +165,7 @@ effect 账本不随记忆回滚：至少有 `not_started / in_flight / committed
 | 时间顺序 | SESSION_ORDER 特定顺序 | chain，不当影响传播 |
 | 审计替换 | replay_of / replacement_map | supersede 在上游默认可达图中；Ariadne 必须分离查询语义 |
 | 支持判定 | 不提供通用独立支持检验 | 无支持默认 True；映射为 unknown，不能自动释放 |
-| 重放安全 | 本地 writer / coarse rollback | ReplayBackend 与环境耦合 | 
+| 重放安全 | 本地 writer / coarse rollback | ReplayBackend 与环境耦合 |
 
 先提供 `can_adapt(snapshot) -> supported/missing_capabilities`。无法表达事件、版本、作用域、coverage 时返回 unsupported，不强行补造关系。sidecar 输出包含原始结果与 commit；适配规则版本独立于上游版本。
 
