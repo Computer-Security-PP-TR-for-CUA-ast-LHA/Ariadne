@@ -45,7 +45,8 @@ The integrated AgentLAB Email smoke uses the actual pinned environment and
 tool schema with a scripted model and fixture checks. It is not an official
 benchmark score, live-model result or RedTeamCUA VM validation.
 
-This draft is local. It has not been pushed to the team repository. It defines
+This feature branch is available for team review but has not been merged into
+`main`. It defines
 the interface for the member responsible for persistent labels and the separate
 second label database. The existing `store.py` demo is a reference for artifact
 IDs and graph handoff, not the implementation or evaluation baseline.
