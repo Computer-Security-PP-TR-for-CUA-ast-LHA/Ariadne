@@ -22,3 +22,6 @@ ariadne-demo = "cua_guard.demo:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+cua_guard = ["vendor/TMA_LICENSE"]

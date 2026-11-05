@@ -121,6 +121,7 @@ Windows 脚本创建项目内 `.venv`，通过 `.pth` 引用源码，不更改�
 | `model.py` | DeepSeek Flash JSON、tools、vision HTTP 调用；超时、调用次数与输出长度限制 |
 | `semantic.py` | 有原文证据的检测、候选祖先定位、保守隔离、语义净化及双重复检 |
 | `runtime.py` | 宿主拥有的上下文、持久化 checkpoint、恢复前复检、参数摘要绑定 |
+| `label_store.py` / `label_bridge.py` / `label_runtime.py` | 双份权威标签与版本、恢复投影及执行前检查；新 benchmark 入口使用此链路 |
 | `agentlab.py` | 锁定版本的真实 EnvManager/Email 环境及有界工具循环 |
 | `redteamcua.py` | 原始 run_single_example 协议适配、视觉感知、有限动作编译与执行包装 |
 | `demo.py` | 会话重启、污染派生复制、阻断、局部隔离和重建演示 |

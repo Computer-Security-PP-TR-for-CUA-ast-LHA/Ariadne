@@ -13,5 +13,5 @@ runs/
 *.sqlite*
 *.db
 *.log
-vendor/
+/vendor/
 vmware_vm_data/
