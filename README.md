@@ -69,13 +69,7 @@ Persistent provenance and targeted repair for computer-use agents.
 
 下一阶段由四人共同开展 ChatGPT 接入；本轮不再按“Benchmark 两人、ChatGPT 两人”拆组。Details.md 中原两组并行安排属于历史设计，当前阶段顺序与职责以本节为准。
 
-`luowentao` 分支的默认恢复链已使用 **LangGraph 持久编排、SqliteSaver 检查点、filelock，以及 SRR 原始 writer 重放**，项目层保留隔离/验证/原子发布/双标签 ACK/授权与效果约束。完整 [源码审查、替换依据及运行方法](docs/recovery/reuse-audit.md) 已入库。安装 `pip install -e ".[srr]"` 并设置固定版本 `ARIADNE_SRR_CHECKOUT` 后运行 `python -m cua_guard.recovery.demo`；缺少上游不会静默回退到自写重放器。图协议仍为 v0.2，图组的真实适配器和正式 benchmark 评分尚待联调。
-
-### 第二部分本地集成
-
-双份标签与版本服务是已提交版本 ID、状态和 scope revision 的准源。`label_store.py` 在主库与校验库中同步提交；`label_bridge.py` 把记录投影给恢复模块，并通过 `LabelOwnedRecoveryStore` 接受隔离计划。修复候选留在恢复模块暂存，`LabelRepairProjection` 验证并提交新版本，双库和恢复投影一致且上下文确认后才能续行。`label_runtime.py` 在实际工具动作前核对宿主授权、参数及证据版本，返回结构化告警。详细契约、论文复用与限制见[标签层说明](docs/label-layer.md)及[第三方声明](THIRD_PARTY_NOTICES.md)。
-
-AgentLAB Email 的固定版本环境已用脚本模型跑通正常任务、注入后修复和越权发信拦截；RedTeamCUA 的包装器通过合成屏幕动作测试。这些是本地接线检查，尚无真实模型攻击成功率或完整 GUI 评分。
+`luowentao` 分支的默认恢复链已使用 **LangGraph 持久编排、SqliteSaver 检查点、filelock，以及 SRR 原始 writer 重放**。`src/cua_guard/provenance/` 已按论文《From Faulty Memories to Corrected Actions》的方法独立实现完整溯源图子系统：三类节点、十类边、trace 自动建图、校验、祖先/后代与受影响子图查询、JSON/SVG 导出，并通过显式投影兼容现有恢复 Snapshot；没有复制作者仓库源码。使用说明见 [完整溯源图文档](docs/provenance/README.md)，方法来源和边界见 [研究记录](docs/research/08_溯源图文献与复用.md)。真实 CUA 宿主 hook 和 benchmark 尚待联调。
 
 执行门拒绝首先触发原因诊断：权限不足、污染和未知须区分。图边记录已捕获输入依赖，不自动证明恶意因果。确认污染后保守隔离根及所有已捕获的受影响副本；验证新版本后重建检索视图、上下文与检查点，重新规划并再次经过执行门。失败或证据不足则保持暂停；回滚状态不撤销已发生的外部效果，也不恢复已消耗授权。
 

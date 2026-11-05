@@ -1,10 +1,7 @@
-"""Typed reachability + stdlib topological order. No claim of semantic causality.
-
-Adaptation of SRR / dependency-guided rollback concepts; no upstream code copied.
-Audit reachability is deliberately a separate late-alert expansion.
-"""
+"""Typed reachability + stdlib topological order. No claim of semantic causality."""
 from graphlib import CycleError, TopologicalSorter
 from .contracts import Edge, RecoveryError, Snapshot, SCHEMA, identity
+from .dgrr import DGRRReachability
 
 DATA = frozenset({'derived_from'})
 AUDIT = frozenset({'sanitized_from', 'supersedes'})
@@ -12,8 +9,9 @@ KINDS = DATA | AUDIT | {'sequence', 'supports'}
 
 
 class VersionGraph:
-    def __init__(self, snapshot: Snapshot, max_nodes=10_000):
+    def __init__(self, snapshot: Snapshot, max_nodes=10_000, *, reachability=None):
         self.snapshot = snapshot
+        self.reachability = reachability or DGRRReachability()
         identity(snapshot.scope_id)
         if snapshot.schema_version != SCHEMA:
             raise RecoveryError('unsupported_schema')
@@ -49,18 +47,10 @@ class VersionGraph:
         roots = set(roots)
         if not roots or not roots <= self.nodes.keys():
             raise RecoveryError('unknown_root')
-        adjacency = {}
-        for e in self.edges:
-            if e.kind in kinds:
-                source, target = (e.target, e.source) if reverse else (e.source, e.target)
-                adjacency.setdefault(source, set()).add(target)
-        seen, todo = set(roots), list(roots)
-        while todo:
-            for n in adjacency.get(todo.pop(), ()):
-                if n not in seen:
-                    seen.add(n)
-                    todo.append(n)
-        return seen
+        selected = {edge for edge in self.edges if edge.kind in kinds}
+        return self.reachability.closure(
+            self.nodes, selected, tuple(sorted(roots)), reverse=reverse
+        )
 
     def topological(self, ids, kinds=DATA):
         ids = set(ids)

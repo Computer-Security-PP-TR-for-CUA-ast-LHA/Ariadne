@@ -3,6 +3,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, replace
 import json
 from pathlib import Path
+from cua_guard.provenance.model import EdgeType, NodeKind, ProvenanceError
+from cua_guard.provenance.validate import validate_graph as validate_provenance_graph
 from .contracts import Edge, RecoveryError, Snapshot, Version, canonical, digest, identity
 from .graph import VersionGraph
 
@@ -69,6 +71,52 @@ def snapshot_from_events(scope_id, revision, versions, events, *, coverage, miss
     snapshot = Snapshot(scope_id, revision, tuple(nodes.values()),
                         tuple(Edge(p, v.version_id) for v in nodes.values() for p in v.parents),
                         coverage, tuple(missing_refs))
+    VersionGraph(snapshot)
+    return snapshot
+
+
+def snapshot_from_provenance(scope_id, revision, versions, graph):
+    """Project a complete three-kind provenance graph onto recovery versions.
+
+    The rich graph remains the audit/query source of truth. Recovery receives
+    only memory versions and explicit memory lineage; step and user-input nodes
+    are intentionally not inserted into the version ledger.
+    """
+    try:
+        validate_provenance_graph(graph).raise_for_errors()
+    except ProvenanceError as exc:
+        raise RecoveryError(exc.code) from exc
+    versions = tuple(versions)
+    nodes = {version.version_id: version for version in versions}
+    if len(nodes) != len(versions):
+        raise RecoveryError('duplicate_version')
+    memories = {
+        node_id for node_id, node in graph.nodes.items()
+        if node.node_kind is NodeKind.MEMORY
+    }
+    if memories != set(nodes):
+        raise RecoveryError('provenance_version_mismatch')
+
+    parents = {node_id: set() for node_id in memories}
+    edges = set()
+    for source, destinations in graph.forward_edges.items():
+        for target, labels in destinations.items():
+            if EdgeType.DERIVE.value in labels:
+                parents[target].add(source)
+                edges.add(Edge(source, target, 'derived_from'))
+            if EdgeType.SUPERSEDE.value in labels:
+                edges.add(Edge(source, target, 'supersedes'))
+    projected = []
+    for node_id in sorted(nodes):
+        version = nodes[node_id]
+        expected = tuple(sorted(parents[node_id]))
+        if version.parents and set(version.parents) != set(expected):
+            raise RecoveryError('provenance_parent_mismatch')
+        projected.append(replace(version, parents=expected))
+    snapshot = Snapshot(
+        scope_id, revision, tuple(projected),
+        tuple(sorted(edges, key=lambda edge: (edge.source, edge.target, edge.kind))),
+    )
     VersionGraph(snapshot)
     return snapshot
 

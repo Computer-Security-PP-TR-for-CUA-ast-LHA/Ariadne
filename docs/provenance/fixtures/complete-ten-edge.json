@@ -1,0 +1,83 @@
+{
+  "schema_version": "ariadne.provenance/1.0",
+  "task_id": "ten-edge-example",
+  "coverage": "complete_within_scope",
+  "missing_refs": [],
+  "n_turns": 1,
+  "step_turn": {
+    "s_cons": 1,
+    "s_delete": 1,
+    "s_read": 1,
+    "s_update": 1,
+    "s_write": 1
+  },
+  "nodes": {
+    "m_cons": {
+      "node_id": "m_cons", "node_kind": "memory",
+      "semantic_type": "memory", "step_type": null, "turn": null,
+      "memory_status": "active", "raw": {}
+    },
+    "m_new": {
+      "node_id": "m_new", "node_kind": "memory",
+      "semantic_type": "memory", "step_type": null, "turn": null,
+      "memory_status": "active", "raw": {}
+    },
+    "m_old": {
+      "node_id": "m_old", "node_kind": "memory",
+      "semantic_type": "memory", "step_type": null, "turn": null,
+      "memory_status": "superseded", "raw": {}
+    },
+    "m_root": {
+      "node_id": "m_root", "node_kind": "memory",
+      "semantic_type": "memory", "step_type": null, "turn": null,
+      "memory_status": "active", "raw": {}
+    },
+    "s_cons": {
+      "node_id": "s_cons", "node_kind": "step",
+      "semantic_type": "memory_consolidate",
+      "step_type": "memory_consolidate", "turn": 1,
+      "memory_status": null, "raw": {}
+    },
+    "s_delete": {
+      "node_id": "s_delete", "node_kind": "step",
+      "semantic_type": "memory_delete", "step_type": "memory_delete",
+      "turn": 1, "memory_status": null, "raw": {}
+    },
+    "s_read": {
+      "node_id": "s_read", "node_kind": "step",
+      "semantic_type": "memory_read", "step_type": "memory_read",
+      "turn": 1, "memory_status": null, "raw": {}
+    },
+    "s_update": {
+      "node_id": "s_update", "node_kind": "step",
+      "semantic_type": "memory_update", "step_type": "memory_update",
+      "turn": 1, "memory_status": null, "raw": {}
+    },
+    "s_write": {
+      "node_id": "s_write", "node_kind": "step",
+      "semantic_type": "memory_write", "step_type": "memory_write",
+      "turn": 1, "memory_status": null, "raw": {}
+    },
+    "user_input_1": {
+      "node_id": "user_input_1", "node_kind": "user_input",
+      "semantic_type": "user_input", "step_type": null, "turn": 1,
+      "memory_status": null, "raw": {"turn": 1, "text": "example"}
+    }
+  },
+  "forward_edges": {
+    "m_new": {"s_cons": ["consolidate"]},
+    "m_old": {
+      "m_new": ["supersede"],
+      "s_delete": ["delete"]
+    },
+    "m_root": {
+      "m_new": ["derive"],
+      "s_update": ["update"],
+      "s_write": ["support"]
+    },
+    "s_cons": {"m_cons": ["produce"]},
+    "s_read": {"s_write": ["chain", "cite"]},
+    "s_write": {"m_new": ["produce"]},
+    "user_input_1": {"s_read": ["initiate"]}
+  }
+}

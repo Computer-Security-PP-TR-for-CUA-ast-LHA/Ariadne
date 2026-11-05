@@ -17,7 +17,7 @@
 | **Apache Burr** | [工程仓库](https://github.com/apache/burr)；项目/接口审查，未运行资格测试 | 状态机和持久化候选，但没有证据证明相对已通过探针的 LangGraph 在当前接口上更优；保留候选，不虚报完成源码全面审计 |
 | **OpenStack TaskFlow** | [官方文档](https://docs.openstack.org/taskflow/latest/)；文档审查，未运行资格测试 | 持久任务/恢复候选；revert/补偿语义不能自动等同于污染修复或业务效果撤销。本轮不引入第二套通用恢复状态机 |
 | **SRR** | [作者页](https://aliuyar.dev/research/selective-revocation-and-replay/)、[固定源码](https://github.com/aliuyar1234/selective-revocation-replay/tree/d7bcb32740156cb985fae0ee93caba35ee45e67e)；原始 smoke 6 项、新原生 replay 集成与进程崩溃测试 | **选用原始 writer 重放**，不再只接 planner；保留作者代码外部 checkout，不重新分发缺少项目级许可证的源码 |
-| **memory-rollback** | [论文与源码入口](https://arxiv.org/abs/2608.10502v2)；沿用已核查源码及 4 项行为探针 | 类型依赖/选择性重放仍可作为方法对照；缺根跳过、缺支持默认通过、回答中心的恢复范围不能直接作为安全发布规则 |
+| **memory-rollback** | [论文与源码入口](https://arxiv.org/abs/2608.10502v2)；审查固定版本的数据模型和受影响子图行为 | 类型化边、多根下游闭包作为本地独立实现的设计依据；没有复制或运行其无项目级许可证的源码，完整选择性恢复仍作为方法对照 |
 | **MnemoIR** | [源码](https://github.com/DheerajPranav/mnemo-ir/tree/3e83d8337545b9254c1165d69ea84e0016e7de4c)；此前 20 项原始测试与 remediation 源码审查 | 部分 COMPENSATE/RECOMPUTE 分支只是计数；不能直接替换真正的重建执行。可复用 API 思路，不将计数当作修复完成 |
 | **AgentSentry / TMA / MemoRepair / ACRFence** | [前轮分析](research-extension.md)及其一手来源 | TMA 原代码保留用于参数恢复；AgentSentry 的原宿主/模型条件尚未通过本项目接入验收；MemoRepair/ACRFence 提供发布与效果边界约束，不声称取得完整原始工程 |
 
@@ -83,7 +83,7 @@ python -m cua_guard.recovery.demo
 python -m unittest discover -s tests -v
 ```
 
-依赖的精确直接版本见 pyproject.toml，测试时的传递依赖版本见 `requirements/recovery-tested.txt`；可用 `pip install -c requirements/recovery-tested.txt -e ".[srr]"` 重现已测环境。SRR 测试需要上游 checkout，TMA 检查仍可通过 `ARIADNE_TMA_CHECKOUT` 启用。核心 Python 版本保持 3.11+。不再承诺恢复模块零第三方依赖。
+依赖的精确直接版本见 pyproject.toml，测试时的传递依赖版本见 `requirements/recovery-tested.txt`；可用 `pip install -c requirements/recovery-tested.txt -e ".[srr]"` 重现已测环境。SRR 测试需要 SRR checkout；本地溯源图测试不需要外部仓库；TMA 检查仍可通过 `ARIADNE_TMA_CHECKOUT` 启用。核心 Python 版本保持 3.11+。不再承诺恢复模块零第三方依赖。
 
 新增 `RecoveryStorePort.workflow_path(scope)`；其他图/告警/版本 schema 仍为 v0.2。原 `WriterRegistryBackend` 不再是生产 API，改用 `SRRWriterBackend(checkout, sanitizer, provider, recipes)`，provider 实现 `identity` 和 `write(kind, inputs, task) -> tuple[str,...]`。完整模型入口可组合 `ModelRepairBackend`、`ModelWriterProvider`、`ModelRepairValidator`，但不会自动启用收费模型。
 
