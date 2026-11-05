@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ariadne.local/schema/provenance-graph-v1.json",
+  "title": "Ariadne complete provenance graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "task_id", "coverage", "missing_refs", "n_turns",
+    "step_turn", "nodes", "forward_edges"
+  ],
+  "properties": {
+    "schema_version": {"const": "ariadne.provenance/1.0"},
+    "task_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "coverage": {"enum": ["complete_within_scope", "partial"]},
+    "missing_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "n_turns": {"type": "integer", "minimum": 0},
+    "step_turn": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "nodes": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/node"}
+    },
+    "forward_edges": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/edgeType"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "edgeType": {
+      "enum": [
+        "chain", "produce", "support", "delete", "update",
+        "consolidate", "initiate", "derive", "supersede", "cite"
+      ]
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id", "node_kind", "semantic_type", "step_type", "turn",
+        "memory_status", "raw"
+      ],
+      "properties": {
+        "node_id": {"type": "string", "minLength": 1, "maxLength": 512},
+        "node_kind": {"enum": ["user_input", "step", "memory"]},
+        "semantic_type": {
+          "enum": [
+            "user_input", "memory", "memory_read", "claim", "plan",
+            "tool_action", "tool_observation", "final_answer",
+            "memory_write", "memory_update", "memory_delete",
+            "memory_consolidate"
+          ]
+        },
+        "step_type": {
+          "type": ["string", "null"]
+        },
+        "turn": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "memory_status": {
+          "type": ["string", "null"]
+        },
+        "raw": {"type": "object"}
+      }
+    }
+  }
+}

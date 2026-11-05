@@ -1,24 +1,31 @@
 """Domain recovery policy on the upstream LangGraph durable execution engine."""
 from .contracts import RecoveryError, Version
+from .dgrr import DGRRReachability
 from .graph import VersionGraph
 from .workflow import invoke_recovery
 
 
 class RecoveryCoordinator:
-    def __init__(self, store, backend, validator, projection, *, graph=None, max_nodes=10_000):
+    def __init__(self, store, backend, validator, projection, *, graph=None,
+                 reachability=None, max_nodes=10_000):
         self.store, self.backend, self.validator, self.projection = store, backend, validator, projection
         self.graph = graph or store
+        self.reachability = reachability or DGRRReachability()
         if type(max_nodes) is not int or max_nodes < 1:
             raise ValueError('max_nodes must be positive')
         self.max_nodes = max_nodes
         for component in (backend, validator, projection):
             if not isinstance(component.identity, str) or not component.identity.strip():
                 raise ValueError('Every adapter needs a stable configuration identity')
+        if (not isinstance(self.reachability.identity, str)
+                or not self.reachability.identity.strip()):
+            raise ValueError('Graph backend needs a stable configuration identity')
 
     def recover(self, request):
         with self.store.recovery_lock(request.scope_id):
             job = self.store.reserve(request, {'backend': self.backend.identity,
                 'validator': self.validator.identity, 'projection': self.projection.identity,
+                'graph_backend': self.reachability.identity,
                 'max_nodes': self.max_nodes, 'algorithm': 'langgraph-barrier/1'})
             if job['state'] == 'ready':
                 current = self.store.ready(request.scope_id, job['revision'])
@@ -32,7 +39,7 @@ class RecoveryCoordinator:
         if job['state'] != 'reserved':
             return job
         snapshot = self.graph.snapshot(request.scope_id)
-        graph = VersionGraph(snapshot, self.max_nodes)
+        graph = VersionGraph(snapshot, self.max_nodes, reachability=self.reachability)
         local = self.store.snapshot(request.scope_id)
         local_graph = VersionGraph(local, self.max_nodes)
         if (snapshot.scope_id != local.scope_id or snapshot.revision != local.revision

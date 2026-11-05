@@ -16,6 +16,7 @@ from .contracts import Edge, RecoveryRequest, Snapshot, Validation, Version, can
 from .sqlite import SQLiteRecoveryStore
 from .coordinator import RecoveryCoordinator
 from .adapters import JSONGraphAdapter, ManagedContextProjection
+from .dgrr import DGRRReachability
 from .srr_writer import SRRWriterBackend
 from .execution import AuthorizationGrant, Proposal, SafeExecutor
 
@@ -53,18 +54,22 @@ class FixtureWriter:
         return tuple(v.content for v in inputs)
 
 
-def run(directory, checkout):
+def run(directory, srr_checkout):
     store = SQLiteRecoveryStore(Path(directory) / 'recovery.sqlite')
     before = example_snapshot()
     store.seed(before, {'current': ('summary-v1','benign-v1'), 'future': ('dormant-v1',)})
     store.record_call(before.scope_id, 'blocked-call', ('summary-v1',))
-    backend = SRRWriterBackend(checkout, FixtureRepair(), FixtureWriter(), {'copy':'memory_write'})
+    backend = SRRWriterBackend(srr_checkout, FixtureRepair(), FixtureWriter(), {'copy':'memory_write'})
+    reachability = DGRRReachability()
     projection = ManagedContextProjection(store)
     graph = JSONGraphAdapter(lambda scope: store.snapshot(scope).to_dict())
     request = RecoveryRequest('incident-001', before.scope_id, 'Return the meeting time and room.',
                               ('web-v1',), ('oracle-fixture-evidence',), call_id='blocked-call')
     started = time.perf_counter()
-    result = RecoveryCoordinator(store, backend, FixtureValidation(), projection, graph=graph).recover(request)
+    result = RecoveryCoordinator(
+        store, backend, FixtureValidation(), projection,
+        graph=graph, reachability=reachability,
+    ).recover(request)
     if result['outcome'] != 'ready':
         raise RuntimeError(result['error'])
     # Restart the host; active context is reconstructed from durable state.
@@ -87,7 +92,8 @@ def run(directory, checkout):
     report = {
         'mode': 'offline_synthetic_mechanism', 'oracle_localization': True,
         'repair_backend': backend.identity, 'model_calls': 0, 'external_tool_calls': 0,
-        'workflow_engine':'langgraph', 'native_replay':backend.last_replay,
+        'workflow_engine':'langgraph', 'graph_backend':reachability.identity,
+        'native_replay':backend.last_replay,
         'recovery_outcome': result['outcome'], 'affected_versions': len(result['mapping']),
         'old_versions_still_visible': sum(v['version_id'] in result['mapping'] for v in active),
         'preserved_benign_version': any(v.version_id == 'benign-v1' and v.content == 'Room: 301.' for v in context),

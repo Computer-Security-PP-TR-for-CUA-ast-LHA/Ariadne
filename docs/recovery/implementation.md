@@ -27,7 +27,7 @@ python -m unittest discover -s tests -p test_recovery_upstream.py -v
 ```
 
 TMA 固定 commit `cf3c9a4ca9f0478000d6aa26eb268b875232d34b`，无额外运行依赖；逐文件校验源码和许可证 SHA-256，允许 Git 的 CRLF/LF 工作树差异。
-SRR 固定 commit `d7bcb32740156cb985fae0ee93caba35ee45e67e`，需要其原始环境依赖（本轮使用已有 PyYAML 环境）；adapter 可指定该环境 Python。严格拒绝版本变化及 `src` 已修改/未跟踪文件。两个 worker 均使用 `-I`、参数列表和超时，不使用 shell，不下载代码，不自动安装依赖。它们是进程隔离，**不是恶意 Python 代码的安全沙箱**，checkout 是可信部署配置。
+SRR 固定 commit `d7bcb32740156cb985fae0ee93caba35ee45e67e`，需要其原始环境依赖（本轮使用已有 PyYAML 环境）；adapter 可指定该环境 Python。溯源图则参考 memory-rollback 论文的方法，在 `dgrr.py` 内独立实现，不运行或打包作者源码，也不需要外部 checkout。
 
 ## 2. 实际模块和责任
 
@@ -35,6 +35,7 @@ SRR 固定 commit `d7bcb32740156cb985fae0ee93caba35ee45e67e`，需要其原始�
 |---|---|---|
 | `contracts.py` | 不可变版本、图快照、恢复请求、验证结果、各类 Protocol | 全组 |
 | `graph.py` | 类型化闭包、调用祖先约束、拓扑顺序、覆盖/缺边/环/hash/来源检查 | 成员 3 |
+| `dgrr.py` | 参考 DGRR 论文独立实现的类型化依赖图、多根受影响节点闭包和反向祖先查询 | 成员 3 |
 | `adapters.py` | JSON 图桥接、writer-event 投影、纯 writer 注册、检索/上下文重建、双标签回写协调 | 成员 2/3 与宿主 |
 | `coordinator.py` | 屏障、隔离、暂存、验证、发布、回写确认、崩溃续作 | luowentao |
 | `sqlite.py` | 事务参考账本、scope 单写者、版本/会话/恢复日志、调用与副作用记录 | 可替换存储适配层 |

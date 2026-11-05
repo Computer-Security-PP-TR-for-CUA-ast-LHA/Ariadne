@@ -9,6 +9,7 @@ import unittest
 
 from cua_guard.recovery import RecoveryCoordinator, SQLiteRecoveryStore
 from cua_guard.recovery.contracts import Edge, RecoveryError, RecoveryRequest, Snapshot, Validation, Version, canonical, digest
+from cua_guard.recovery.dgrr import DGRRReachability, DependencyGraph, affected_node_ids
 from cua_guard.recovery.graph import VersionGraph
 from cua_guard.recovery.adapters import CapturedWriterEvent, DualLabelProjection, JSONGraphAdapter, ManagedContextProjection, snapshot_from_events
 from cua_guard.recovery.execution import AuthorizationGrant, Proposal, SafeExecutor
@@ -23,6 +24,38 @@ def fixture():
     vs = (version('root', 'fact; INJECT'), version('summary', 'fact; INJECT', ('root',), 'copy'),
           version('dormant', 'fact; INJECT', ('summary',), 'copy'), version('good', 'unrelated'))
     return Snapshot('tenant', 0, vs, (Edge('root', 'summary'), Edge('summary', 'dormant'), Edge('root', 'good', 'sequence')))
+
+
+class DGRRGraphTests(unittest.TestCase):
+    def setUp(self):
+        self.nodes = {'root-a', 'root-b', 'summary', 'copy', 'independent'}
+        self.edges = {
+            Edge('root-a', 'summary'),
+            Edge('root-b', 'summary', 'supports'),
+            Edge('summary', 'copy'),
+        }
+
+    def test_multi_seed_affected_nodes_are_deduplicated(self):
+        graph = DependencyGraph(self.nodes, self.edges)
+        self.assertEqual(
+            affected_node_ids(graph, 'root-a', 'root-b'),
+            ('summary', 'copy'),
+        )
+        self.assertEqual(graph.edge_kinds('root-b', 'summary'), {'supports'})
+
+    def test_reverse_projection_finds_ancestors(self):
+        self.assertEqual(
+            DGRRReachability().closure(
+                self.nodes, self.edges, ('copy',), reverse=True
+            ),
+            {'root-a', 'root-b', 'summary', 'copy'},
+        )
+
+    def test_unknown_root_fails_closed(self):
+        with self.assertRaisesRegex(RecoveryError, 'unknown_root'):
+            DGRRReachability().closure(
+                self.nodes, self.edges, ('missing',)
+            )
 
 
 class FixtureBackend:
@@ -389,6 +422,22 @@ class RecoveryTests(unittest.TestCase):
 
 
 class GraphValidationTests(unittest.TestCase):
+    def test_reachability_backend_receives_only_selected_edge_kinds(self):
+        class Backend:
+            identity = 'fixture-graph/1'
+            def closure(self, nodes, edges, roots, *, reverse=False):
+                self.call = (set(nodes), set(edges), roots, reverse)
+                return {'root', 'summary'}
+        backend = Backend()
+        snapshot = replace(
+            fixture(),
+            edges=fixture().edges + (Edge('good', 'summary', 'supports'),),
+        )
+        result = VersionGraph(snapshot, reachability=backend).closure(('root',))
+        self.assertEqual(result, {'root', 'summary'})
+        self.assertEqual(backend.call[2:], (('root',), False))
+        self.assertNotIn(Edge('good', 'summary', 'supports'), backend.call[1])
+
     def test_event_projection_keeps_ephemeral_path(self):
         vs = tuple(version(n,'fact') for n in ('root','temporary','memory','other'))
         events = (CapturedWriterEvent('e1',('root',),('temporary',)), CapturedWriterEvent('e2',('temporary',),('memory',),'copy'))
