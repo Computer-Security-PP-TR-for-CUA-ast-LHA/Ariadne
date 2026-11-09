@@ -8,7 +8,7 @@ Persistent provenance and targeted repair for computer-use agents.
 
 ## 当前方向：复用、集成与补强
 
-**2026-11-02 更新，按组内讨论后的四人分工执行。** 项目面向 CUA 的跨会话持久状态污染，优先复用前人已有的标签、溯源图、权限控制、检测与修复成果，形成统一代码库，再接入 benchmark 和桌面 ChatGPT 做验证。
+**2026-11-09 更新。** 项目面向 CUA 的跨会话持久状态污染，优先复用前人已有的标签、溯源图、权限控制、检测与修复成果，形成统一代码库，再接入 benchmark 和桌面 ChatGPT 做验证。
 
 能复用的组件先检查原始代码、版本、依赖、许可证和运行结果，再接入。后续不再默认从头编写相关方法的最小替代实现；现有自写内核保留为机制原型和对照。复用也需要实测，不能只凭论文结果或仓库名称假定效果可靠。
 
@@ -28,13 +28,14 @@ Persistent provenance and targeted repair for computer-use agents.
 
 ## 已有工作与当前缺口
 
-| 部分 | 当前状态 |
-|---|---|
-| 机制原型 | 已有 SQLite 版本/来源账本、依赖查询、执行门、隔离与重建、checkpoint；28 项自动测试已有通过记录 |
-| 模型与实验适配 | 已有 DeepSeek 客户端、语义检测/净化流程代码、AgentLAB Email 适配及 RedTeamCUA 执行包装 |
-| 前人成果复用 | `luowentao` 已提供固定版本 TMA 参数恢复与 SRR 原生计划 adapter、恢复组件和离线续行入口；完整真实 benchmark 集成仍待验收 |
-| 完整 benchmark | 尚未完成真实模型端到端评测与完整 GUI 环境验收；没有可报告的真实模型 ASR 或方法优越性结果 |
-| 桌面 ChatGPT | 尚未完成插件/harness 接入及真实场景验收；需先核实宿主提供的工具拦截和上下文管理接口 |
+截至 2026-11-09，`main` 已合入双份权威标签、溯源图和定向恢复。基于 `316c0be` 的 Windows 离线回归共 147 项通过。下一项共同验收是用同一条真实宿主轨迹串起四个模块，交回 benchmark 官方评分器。[进展、问题和验收步骤](Procedure.md)
+
+| 模块 | 已进入主线 | 待验收 |
+|---|---|---|
+| Benchmark | AgentLAB Email 和 RedTeamCUA 入口使用 LabelSession 捕获观测和拟执行动作 | 固定正常与攻击任务，运行官方评分并保存失败分母 |
+| 标签与执行门 | 双份标签记录已提交版本和 revision，桥接恢复工作副本，执行前检查授权 | 在真实 runner 中核对每次拟执行动作均经过受控入口 |
+| 溯源图 | 从宿主记录建图，支持依赖查询及 JSON/SVG 导出，可投影到恢复快照 | 验证真实轨迹中每次读、写、摘要的输入和产物均已记录 |
+| 恢复 | LangGraph 持久编排与 SRR writer 重放已用于离线恢复演示 | 在完整运行器中验证修复后继续原任务和跨会话读取 |
 
 此前实现范围和环境记录见 [Proposal 实施记录](docs/proposal-implementation.md)，该文档是历史阶段记录，后续工作以本 README 的复用优先路线为准。ChatGPT 接入安排在本轮 benchmark 之后。**暂不启动付费 API 实验**；真实模型评测需要另行确定可用的模型调用方式与预算，离线机制测试不等于真实 benchmark 数据。原 API 客户端保留作为可选路径。
 
@@ -67,9 +68,9 @@ Persistent provenance and targeted repair for computer-use agents.
 | 成员 3：溯源图与导出 | 真实依赖采集、版本图、祖先/后代查询、图形导出 | 图快照、调用依据、全域后代、覆盖缺口与审计关系 |
 | **luowentao：定向修复与恢复** | 修复协调器、内容/参数修复后端适配、状态重建、checkpoint 与恢复运行 | 修复计划、旧新版本映射、未解决项、复检记录、恢复状态 |
 
-下一阶段由四人共同开展 ChatGPT 接入；本轮不再按“Benchmark 两人、ChatGPT 两人”拆组。Details.md 中原两组并行安排属于历史设计，当前阶段顺序与职责以本节为准。
+下一阶段由四人共同开展 ChatGPT 接入；本轮不再按“Benchmark 两人、ChatGPT 两人”拆组。阶段交接标准见 [Procedure.md](Procedure.md)。
 
-`luowentao` 分支的默认恢复链已使用 **LangGraph 持久编排、SqliteSaver 检查点、filelock，以及 SRR 原始 writer 重放**。`src/cua_guard/provenance/` 已按论文《From Faulty Memories to Corrected Actions》的方法独立实现完整溯源图子系统：三类节点、十类边、trace 自动建图、校验、祖先/后代与受影响子图查询、JSON/SVG 导出，并通过显式投影兼容现有恢复 Snapshot；没有复制作者仓库源码。使用说明见 [完整溯源图文档](docs/provenance/README.md)，方法来源和边界见 [研究记录](docs/research/08_溯源图文献与复用.md)。真实 CUA 宿主 hook 和 benchmark 尚待联调。
+主线的离线恢复演示已使用 **LangGraph 持久编排、SqliteSaver 检查点、filelock，以及 SRR 原始 writer 重放**。`src/cua_guard/provenance/` 已按论文《From Faulty Memories to Corrected Actions》的方法独立实现完整溯源图子系统：三类节点、十类边、trace 自动建图、校验、祖先/后代与受影响子图查询、JSON/SVG 导出，并通过显式投影兼容现有恢复 Snapshot；没有复制作者仓库源码。使用说明见 [完整溯源图文档](docs/provenance/README.md)，方法来源和边界见 [研究记录](docs/research/08_溯源图文献与复用.md)。真实 CUA 宿主 hook 和 benchmark 尚待联调。
 
 执行门拒绝首先触发原因诊断：权限不足、污染和未知须区分。图边记录已捕获输入依赖，不自动证明恶意因果。确认污染后保守隔离根及所有已捕获的受影响副本；验证新版本后重建检索视图、上下文与检查点，重新规划并再次经过执行门。失败或证据不足则保持暂停；回滚状态不撤销已发生的外部效果，也不恢复已消耗授权。
 
@@ -94,22 +95,13 @@ Persistent provenance and targeted repair for computer-use agents.
 
 以下是已入库的机制原型测试和演示入口。演示不调用真实模型，不代表完整 benchmark 或桌面接入已完成。
 
-Windows PowerShell：
+在仓库根目录使用 Python 3.11+ 的虚拟环境运行以下命令。运行全部上游用例还需设置 `ARIADNE_SRR_CHECKOUT` 和 `ARIADNE_TMA_CHECKOUT`，见 [复现条件](docs/recovery/reuse-audit.md)。
 
-```powershell
-.\scripts\bootstrap.ps1
-.\.venv\Scripts\python.exe -m cua_guard.demo
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```sh
+python -m pip install -c requirements/recovery-tested.txt -e ".[srr]"
+python -m unittest discover -s tests -q
+python -m cua_guard.demo
 ```
-
-Linux（Python 3.11+）：
-
-```bash
-bash scripts/bootstrap.sh  # 已有 uv Python 3.13 时离线建 .venv-wsl
-bash scripts/check.sh
-```
-
-Windows 脚本创建项目内 `.venv`，通过 `.pth` 引用源码，不更改系统 Python。历史原型仍可单独运行；当前恢复模块及全量测试需要先执行 `python -m pip install -e ".[srr]"` 安装固定版本运行依赖，首次安装需要联网，不需要 API key。测试环境约束见 `requirements/recovery-tested.txt`。
 
 ## Modules
 
@@ -139,10 +131,10 @@ Windows 脚本创建项目内 `.venv`，通过 `.pth` 引用源码，不更改�
 
 ## Research and collaboration
 
-仓库 `docs/research/` 保存此前的调研副本，`docs/architecture.md` 和 `docs/proposal-implementation.md` 记录已有原型及边界；早期路线若与本 README 不同，以这里的 2026-11-02 更新为准。工作区另有 `项目调研/相关文献/` 和 `项目调研/文献综述/`，论文 PDF 与新增笔记尚未全部纳入本仓库。
+仓库 `docs/research/` 保存此前的调研副本，`docs/architecture.md` 和 `docs/proposal-implementation.md` 记录已有原型及边界；早期路线若与本 README 不同，以本页的阶段状态为准。工作区另有 `项目调研/相关文献/` 和 `项目调研/文献综述/`，论文 PDF 与新增笔记尚未全部纳入本仓库。
 
 团队流程见 [CONTRIBUTING.md](CONTRIBUTING.md)。已有 [PR #1 的 CI](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/41052088365) 通过 Windows/Ubuntu × Python 3.11/3.13 四组检查，覆盖当时的 28 项测试与机制演示；这不代表完整安全效果评测通过。
 
-`luowentao` 的通用实现替换已通过 [五项跨平台 CI](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/41451944312)，干净安装包全量测试 98 项通过、无跳过。源码选型、默认 LangGraph/SRR 接入、复用边界和可复现记录见 [复用替换审查](docs/recovery/reuse-audit.md)。
+`luowentao` 的通用实现替换已通过 [五项跨平台 CI](https://github.com/Computer-Security-PP-TR-for-CUA-ast-LHA/Ariadne/actions/runs/41451944312)，当时的干净安装包全量测试 98 项通过、无跳过。源码选型、默认 LangGraph/SRR 接入、复用边界和可复现记录见 [复用替换审查](docs/recovery/reuse-audit.md)。
 
 许可证待四位成员共同确定；当前没有授予开源再分发许可。引用外部代码时需单独遵守其许可证。
