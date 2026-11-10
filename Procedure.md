@@ -1,6 +1,6 @@
-# Ariadne 项目进展 · 2026-11-09
+# Ariadne 项目进展 · 2026-11-10
 
-本轮核查基于 `main` 的 `316c0be`。标签、图和恢复代码已经合入同一仓库。当前可以复现标签持久化、依赖图投影和定向恢复。下一个里程碑是让同一次 benchmark 任务产生可追踪的观测、图、修复记录与官方得分。
+本轮核查基于 `main` 的 `540e831`。相对上次文档提交 `6cc9885`，远程新增了[数据与实验方案](数据推荐.md)，运行代码和测试没有变更。标签、图和恢复代码已经合入同一仓库。当前可以复现标签持久化、依赖图投影和定向恢复。下一个里程碑是让同一次 benchmark 任务产生可追踪的观测、图、修复记录与官方得分。
 
 ## 主线交付
 
@@ -10,7 +10,24 @@
 | `40dc473` | 双份标签库成为版本状态的权威来源。AgentLAB Email 和 RedTeamCUA 的受控入口使用标签会话，标签桥接层把提交结果同步给恢复库 | [写入、隔离与恢复协议](docs/label-layer.md) |
 | `316c0be` · PR #3 | 由宿主提供的 trace 构建三类节点、十类边的图，支持影响范围查询、JSON/SVG 导出和版本快照投影 | [图接口及十类边样例](docs/provenance/README.md) |
 
-## 本轮实测
+## 11 月 10 日复核
+
+| 检查对象 | 方法 | 结果与适用范围 |
+|---|---|---|
+| 主线回归 | 在干净的主线工作树设置 `PYTHONPATH=src`，启用固定版本的 TMA 和 SRR checkout，运行 `python -m unittest discover -s tests -q` | Windows Python 3.13 上 147 项通过，0 跳过，146.925 秒 |
+| AgentLAB Email | 运行 `python scripts/smoke_label_agentlab.py --agentlab <AgentLAB检出目录>`，上游提交 `36f58e60` | 正常邮件任务完成，注入用例发出污染告警、修复至 ready 并完成任务，未授权发送在 send_email 执行前被阻断。使用真实 Email 环境、脚本模型及夹具验证器 |
+| RTC-Bench 配置 | 在 RedTeamCUA 提交 `a05b8bd0` 遍历 `evaluation_examples/test_all.json`，按平台与 ID 从同目录的 `RedTeamCUA_configs.zip` 逐个读取 `examples/<平台>/<ID>.json` | OwnCloud、Reddit、Rocket.Chat 各 288 个平台内唯一 ID。全部 864 份均可解析，ID 和平台与索引相符，instruction、evaluator 和 adversary_evaluator 非空。GUI 执行与评分器运行仍待验收 |
+
+### 审核发现与优先处理项
+
+| 状态 | 发现及影响 | 下一项验收 |
+|---|---|---|
+| 文档口径已校正 | 实验方案原先把执行门画进 B0，技术详解又把仅执行门的组称为 B1，与写入过滤组重名。沿用旧标签会混淆实验结果 | B0–B4 用于端到端评测，恢复实验的仅门控组写作 Gate-only。每条结果附配置和初始快照 ID |
+| 批量运行前待处理 | Ariadne GUI 入口直接将 `--output` 交给原始 runner。复用同一目录时，成功轨迹的 `result.txt` 和 `adversary_result.txt` 会被后一次写入覆盖，`traj.jsonl` 则会追加；执行中断还可能缺少评分文件 | 为每个 case、对照组和重复轮次指定独立输出目录。先跑两次并核对各自轨迹、两项评分与终止原因；运行清单保留失败项。[入口实现](src/cua_guard/redteamcua.py) |
+| 宿主联调仍有缺口 | 两个 benchmark 入口使用标签会话。图模块已有 recorder、版本投影和单测，在这两个入口中尚未找到直接调用 recorder 并将该次完整图送入恢复的路径。Email 冒烟验证到标签与恢复，完整事件采集仍缺同次运行的证据 | 同一次邮件读取、摘要写入和调用提议携带真实 ID，核对标签 revision、图 JSON、恢复旧新版本映射和最终评分 |
+| 实验设计待落地 | SQLite 账本和受控 runner 已入库。FTS5 检索、40 个生命周期用例、B0–B4 批量运行与 96/288 个 GUI 子集均属于新方案的计划项。无跨会话记忆仍可能受到当轮输入影响 | 先冻结一个正常/攻击任务对，在同一任务与权限下比较 B0 和 B3；另从同一污染快照比较恢复方式。记录分母、正常任务得分、攻击得分与重启后复发 |
+
+## 11 月 9 日机制检查记录
 
 在干净的主线工作树上使用 Windows Python 3.13，从该次检出的 `src` 加载代码。测试设置了 `ARIADNE_TMA_CHECKOUT` 和 `ARIADNE_SRR_CHECKOUT`，分别指向固定版本的 mem-inv-bench 和 selective-revocation-replay。安装条件见 [README](README.md#quick-start)。
 
