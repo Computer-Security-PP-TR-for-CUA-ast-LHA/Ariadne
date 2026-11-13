@@ -154,6 +154,26 @@ be used as data when a separate host grant authorizes the action.
   environment using a scripted model. It reports fixture checks, not official
   benchmark scoring.
 
+### AgentLAB graph handoff
+
+The AgentLAB Email path now installs `LabelProvenancePort` as the recovery graph
+port. `LabelSession` reports its committed writes, managed reads and proposed
+actions; the AgentLAB adapter reports completed tool observations. The port
+uses `m_<label UUID>` within `ProvenanceRecorder` and retains the label UUID as
+the version authority. Before a repair plan, it validates the graph and checks
+that its version set and memory-parent edges match the label snapshot. A
+missing host write stops the handoff. After publication it validates again
+before this session resumes. The smoke writes one graph JSON per case and
+checks the label/recovery revision and repair outcome in the same run.
+
+This is an **AgentLAB host-path integration**, not an independent claim that
+all CUA events have been captured. The graph receives records from the
+instrumented host points; it cannot detect a host read that was never reported.
+Recovery still plans on explicit version-parent edges; step-only dependencies
+are visible in the rich graph but are not yet projected into recovery targets.
+The RedTeamCUA GUI entry point does not use this port yet. The scripted Email
+smoke is not an official benchmark score or a live-model evaluation.
+
 ## Local verification and remaining integration
 
 From PowerShell in the repository root:
@@ -170,8 +190,9 @@ tampering, channel classification and fixtures. New bridge/runtime tests cover
 revision parity, interrupted normal-write projection, label-owned quarantine,
 crash replay, repair publication,
 action binding, structured alerts, unknown-state suspension and a synthetic
-RedTeamCUA wrapper action. Full model/GUI benchmark evaluation remains with
-the benchmark member. The team lead has selected the label ledger as authority;
+RedTeamCUA wrapper action. The graph-port tests also cover a missing host write
+and post-repair graph failure. Full model/GUI benchmark evaluation remains to
+be completed by the team. The team lead has selected the label ledger as authority;
 the graph and recovery members must use this contract and test the graph
 member's real adapter; the benchmark member must
 run its official scorer and environment. The current smoke does not provide
