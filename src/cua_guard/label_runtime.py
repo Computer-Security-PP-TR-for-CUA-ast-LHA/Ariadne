@@ -49,6 +49,8 @@ class LabelSession:
         self.repairs: list[dict] = []
         self.blocked = False
         self._screened: set[tuple[str, str]] = set()
+        if callback := getattr(self.graph, "on_session_start", None):
+            callback(self.context[0])
 
     @property
     def store(self):
@@ -63,6 +65,8 @@ class LabelSession:
                                       parents=tuple(parents), confidentiality=confidentiality,
                                       principals=principals)
         self.context.append(node_id)
+        if callback := getattr(self.graph, "on_capture", None):
+            callback(node_id, artifact, tuple(parents))
         return node_id
 
     def _alert(self, call_id: str, reason_code: str, detail: str,
@@ -95,6 +99,9 @@ class LabelSession:
                     raise LabelConflict("Inactive context version")
             self.bridge.recovery.record_call(self.bridge.scope_id, call_id,
                                              tuple(self.context))
+            if callback := getattr(self.graph, "on_read", None):
+                callback(tuple(self.context), purpose="pre_execution_screen",
+                         call_id=call_id)
         except (LabelConflict, RecoveryError, KeyError) as exc:
             self.blocked = True
             try:
@@ -157,6 +164,17 @@ class LabelSession:
         if result.get("outcome") != "ready":
             self.blocked = True
             raise PermissionError("Recovery needs review")
+        if callback := getattr(self.graph, "on_recovery_commit", None):
+            try:
+                callback()
+            except Exception as exc:
+                self.blocked = True
+                failure_call = call_id or str(uuid4())
+                self._alert(failure_call, "integrity_mismatch",
+                            "Post-repair graph validation failed", roots,
+                            self.store.revision())
+                self._suspend_scope(failure_call, "integrity_mismatch", roots)
+                raise PermissionError("Post-repair graph validation failed") from exc
         self.bridge.assert_ready()
         self.context = list(self.bridge.recovery.manifest(self.bridge.scope_id)
                             ["sessions"][self.session_id])
@@ -167,6 +185,8 @@ class LabelSession:
         if self.blocked:
             raise PermissionError("Session suspended")
         self.bridge.assert_ready()
+        if callback := getattr(self.graph, "on_read", None):
+            callback(tuple(self.context), purpose="model_context")
         records = []
         for node_id in self.context[1:]:
             record = self.store.read(node_id)
@@ -224,6 +244,9 @@ class LabelSession:
         action = Action(self.task_id, tool, payload_hash, "host-tool",
                         tuple(Evidence(node_id, sha) for node_id, sha in bindings), risk)
         decision = check_action(self.store, action, host_grant)
+        if callback := getattr(self.graph, "on_action", None):
+            callback(call_id, tool, tuple(node_id for node_id, _ in bindings),
+                     allowed=decision.allowed, payload_hash=payload_hash)
         if not decision.allowed:
             reason = ("missing_authority" if decision.reason in
                       {"outside_host_grant", "missing_direct_confirmation"} else
