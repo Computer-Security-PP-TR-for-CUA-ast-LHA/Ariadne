@@ -14,6 +14,8 @@ from .label_bridge import LabelRecoveryBridge
 from .label_runtime import LabelSession
 from .label_policy import HostGrant
 from .label_store import Confidentiality, PersistentLabelStore
+from .label_provenance import LabelProvenancePort
+from .provenance import write_json
 from .recovery import SQLiteRecoveryStore
 from .recovery.semantic import ModelRepairBackend, ModelRepairValidator
 from .recovery.contracts import canonical, digest
@@ -121,6 +123,9 @@ def run(env, session, max_steps=5, *, principal: str | None = None):
                 policy = email_policy
             result = session.dispatch(tool, arguments, policy,
                                       execute)
+            if callback := getattr(getattr(session, "graph", None),
+                                   "on_tool_observation", None):
+                callback(tool)
             # Never replay unsanitized assistant/tool histories after a repair.
             content = json.dumps({"tool": tool, "arguments": arguments, "result": result},
                                  ensure_ascii=False)
@@ -149,17 +154,24 @@ def main():
     store = PersistentLabelStore(args.output / (run_id + "-primary.sqlite"),
                                  args.output / (run_id + "-labels.sqlite"), scope_id=run_id)
     recovery = SQLiteRecoveryStore(args.output / (run_id + "-recovery.sqlite"))
-    session = LabelSession(LabelRecoveryBridge(store, recovery), client, fixture["task"],
+    bridge = LabelRecoveryBridge(store, recovery)
+    graph_port = LabelProvenancePort(bridge, fixture["task"])
+    session = LabelSession(bridge, client, fixture["task"], graph=graph_port,
                            detector=SemanticDefense(store, client).inspect,
                            repair_backend=ModelRepairBackend(client, configuration_id=client.model),
                            validator=ModelRepairValidator(client, configuration_id=client.model))
     try:
         answer = run(env, session, args.max_steps, principal=fixture.get("principal"))
+        graph = graph_port.build()
+        graph_port.snapshot(run_id)
+        write_json(graph, args.output / (run_id + "-provenance.json"))
         report = {"kind": "live_model_agentlab_environment", "upstream": REVISION,
                   "model": client.model, "answer": answer, "usage": client.usage,
                   "repairs": session.repairs,
                   "alerts": [alert.as_dict() for alert in session.alerts],
-                  "scope_id": run_id}
+                  "scope_id": run_id, "ledger_revision": store.revision(),
+                  "provenance_nodes": len(graph.nodes),
+                  "provenance_coverage": graph.coverage}
         (args.output / "result.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
         print(json.dumps({"status": "completed", "calls": client.calls, "output": str(args.output)}))
     finally:
