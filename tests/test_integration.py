@@ -126,6 +126,17 @@ class IntegrationTests(unittest.TestCase):
         with self.assertRaises(PermissionError):
             env.step("WAIT")
 
+    def test_gui_wrapper_persists_digest_for_binary_observation(self):
+        class Env:
+            def step(self, action):
+                return ({"screenshot": b"png", "accessibility_tree": "<tree/>"}, 0.5, False, {})
+        env = GuardedDesktopEnv(Env())
+        session = GuardedSession(self.store, ScriptedModel(), "Task")
+        env.authorize(session, "WAIT")
+        result = env.step("WAIT")
+        self.assertEqual(result[0]["screenshot"], b"png")
+        self.assertEqual(result[1:3], (0.5, False))
+
 
 class TransportTests(unittest.TestCase):
     def test_real_http_encoding_usage_and_call_budget(self):
