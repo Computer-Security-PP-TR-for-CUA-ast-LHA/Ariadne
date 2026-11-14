@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-01",
+  "execution_policy": {
+    "paid_api_calls": false,
+    "local_large_model": false,
+    "preferred_live_host": "desktop ChatGPT (local Work/Codex capabilities require validation)"
+  },
+  "sources": [
+    {
+      "name": "OpenAPPA",
+      "repository": "https://github.com/archestra-ai/OpenAPPA",
+      "commit": "790a2de43bf0c56c490bff8d5f931ed61cab68ab",
+      "license_observed": "MIT",
+      "source_role": "author_runtime",
+      "purpose": "policy_labels_recovery"
+    },
+    {
+      "name": "mem-inv-bench",
+      "repository": "https://github.com/yedidel/mem-inv-bench",
+      "commit": "cf3c9a4ca9f0478000d6aa26eb268b875232d34b",
+      "license_observed": "MIT",
+      "source_role": "author_artifact",
+      "purpose": "origin_scope_authority"
+    },
+    {
+      "name": "AgentSentry",
+      "repository": "https://github.com/CyberGuardianAI/AgentSentry",
+      "commit": "6dc71c9e0968b0195fbe0f633cccca93260b279d",
+      "license_observed": "not-found",
+      "source_role": "paper_linked_repository",
+      "purpose": "detection_context_repair"
+    },
+    {
+      "name": "fides",
+      "repository": "https://github.com/microsoft/fides",
+      "commit": "669c046c4adbc56ee49c9672fdd30c54937ea062",
+      "license_observed": "MIT",
+      "source_role": "author_tutorial",
+      "purpose": "ifc_reference"
+    },
+    {
+      "name": "CaMeL",
+      "repository": "https://github.com/google-research/camel-prompt-injection",
+      "commit": "f083b6b396399d3b3c7f2ddaf613a5945eaf32d8",
+      "license_observed": "Apache-2.0",
+      "source_role": "author_artifact",
+      "purpose": "control_data_flow"
+    },
+    {
+      "name": "memlineage-independent",
+      "repository": "https://github.com/amurlaniakea/memlineage",
+      "commit": "73e770478f044323052a402795690c9d4e62f804",
+      "license_observed": "AGPL-3.0-or-later",
+      "source_role": "independent_implementation_not_paper_authors",
+      "purpose": "signed_provenance_dag_candidate"
+    },
+    {
+      "name": "AgentLAB",
+      "repository": "https://github.com/TanqiuJiang/AgentLAB",
+      "commit": "36f58e60c36bbd6d5b8e61d50d7db7d9ea7258d7",
+      "license_observed": "MIT",
+      "source_role": "author_benchmark",
+      "purpose": "tools_benchmark"
+    },
+    {
+      "name": "RedTeamCUA",
+      "repository": "https://github.com/OSU-NLP-Group/RedTeamCUA",
+      "commit": "a05b8bd04629e19a9a06bf04f8e0c5b53549d16c",
+      "license_observed": "Apache-2.0",
+      "source_role": "author_benchmark",
+      "purpose": "gui_benchmark"
+    }
+  ],
+  "openappa_binary": {
+    "version": "0.38.1",
+    "relative_path": "openappa/v0.38.1/appa.exe",
+    "sha256": "abd972e31cd25bd2051b9962757583b28fb6da1371b357fd6e79df4732ca71da",
+    "archive_sha256": "5132ae7df09ef541e76f0c7015feaba9806d736a4cc7e3fcb13198144002cefc",
+    "release_url": "https://github.com/archestra-ai/OpenAPPA/releases/tag/v0.38.1"
+  }
+}

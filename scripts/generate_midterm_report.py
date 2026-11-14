@@ -82,12 +82,12 @@ total_validated = sum(validated)
 stamp = rows[0]["runtime"]["timestamp_utc"]
 
 (OUT / "platform_summary.csv").write_text(
-    "platform,requested_cases,validated_cases,errors,validation_rate\\n"
-    + "\\n".join(
+    "platform,requested_cases,validated_cases,errors,validation_rate\n"
+    + "\n".join(
         f"{name},{req},{val},{len(d['errors'])},{rate:.2f}%"
         for name, req, val, rate, d in zip(names, requested, validated, rates, rows)
     )
-    + "\\n",
+    + "\n",
     encoding="utf-8",
 )
 
@@ -97,6 +97,8 @@ report = f'''# Ariadne 中期 Benchmark 汇报
 **运行平台**：Ubuntu 24.04 VM，主机 `192.168.121.135`，用户 `cs315proj`  
 **Benchmark**：RedTeamCUA / RTC-Bench  
 **运行范围**：三平台完整 metadata preflight；不是模型驱动的端到端 ASR 测试
+
+团队合并后的进度与本机 DeepSeek 数据见 [中期答辩验收清单](Procedure.md#中期答辩验收清单)。下文保留 11 月 13 日 Ubuntu VM 的原始预检口径。
 
 ## 1. 执行摘要
 

@@ -1,0 +1,60 @@
+{
+  "model": "deepseek-flash",
+  "scope": "benign JSON interface checks",
+  "rows": [
+    {
+      "input": 3,
+      "seconds": 0.85,
+      "passed": true,
+      "received": {
+        "value": 3
+      },
+      "usage": {
+        "prompt_tokens": 48,
+        "completion_tokens": 6,
+        "total_tokens": 54,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 48
+      }
+    },
+    {
+      "input": 7,
+      "seconds": 0.983,
+      "passed": true,
+      "received": {
+        "value": 7
+      },
+      "usage": {
+        "prompt_tokens": 48,
+        "completion_tokens": 6,
+        "total_tokens": 54,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 48
+      }
+    },
+    {
+      "input": 11,
+      "seconds": 0.984,
+      "passed": true,
+      "received": {
+        "value": 11
+      },
+      "usage": {
+        "prompt_tokens": 48,
+        "completion_tokens": 6,
+        "total_tokens": 54,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 48
+      }
+    }
+  ]
+}

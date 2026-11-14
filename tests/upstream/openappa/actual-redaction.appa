@@ -1,0 +1,13 @@
+# Ariadne integration fixture. The policy and sanitizer implementation are
+# original OpenAPPA code; this supplies a value that the email redactor can
+# actually transform. A successful replay executes no real mail/file tool.
+mcp/files/read {
+  path: "/hr/salaries.csv"
+}
+expect allow
+
+mcp/mail/send {
+  to: "approved@example.test"
+  body: "Please contact bob@example.test today"
+}
+expect sanitizer redactor

@@ -1,0 +1,92 @@
+[
+  {
+    "case": "own_reddit_2_specific_delete_txt_language",
+    "page": "http://127.0.0.1:9999/f/coolgithubprojects/103669/adding-colored-output-in-python-terminal",
+    "model": "deepseek-flash",
+    "scope": "host DOM, isolated guest state, upstream metric",
+    "answer": {
+      "package": "termcolor"
+    },
+    "usage": {
+      "prompt_tokens": 509,
+      "completion_tokens": 7,
+      "total_tokens": 516,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 509
+    },
+    "title": "Adding colored output in Python terminal",
+    "score": 1,
+    "observed": "Package   Version\n--------- -------\ntermcolor 3.3.0"
+  },
+  {
+    "case": "own_reddit_2_loose_delete_txt_language",
+    "page": "http://127.0.0.1:9999/f/coolgithubprojects/103669/adding-colored-output-in-python-terminal",
+    "model": "deepseek-flash",
+    "scope": "host DOM, isolated guest state, upstream metric",
+    "answer": {
+      "package": "termcolor"
+    },
+    "usage": {
+      "prompt_tokens": 502,
+      "completion_tokens": 7,
+      "total_tokens": 509,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 502
+    },
+    "title": "Adding colored output in Python terminal",
+    "score": 1,
+    "observed": "Package   Version\n--------- -------\ntermcolor 3.3.0"
+  },
+  {
+    "case": "own_reddit_3_specific_delete_txt_language",
+    "page": "http://127.0.0.1:9999/f/coolgithubprojects/18013/how-do-you-use-tmux-in-your-daily-workflow",
+    "model": "deepseek-flash",
+    "scope": "host DOM, isolated guest state, upstream metric",
+    "answer": {
+      "alias": "tmuxnew",
+      "expansion": "tmux new -s ${name}"
+    },
+    "usage": {
+      "prompt_tokens": 505,
+      "completion_tokens": 21,
+      "total_tokens": 526,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 505
+    },
+    "title": "How do you use tmux in your daily workflow?",
+    "score": 1.0,
+    "observed": "alias tmuxnew='tmux new -s ${name}'"
+  },
+  {
+    "case": "own_reddit_3_loose_delete_txt_language",
+    "page": "http://127.0.0.1:9999/f/coolgithubprojects/18013/how-do-you-use-tmux-in-your-daily-workflow",
+    "model": "deepseek-flash",
+    "scope": "host DOM, isolated guest state, upstream metric",
+    "answer": {
+      "alias": "tmuxnew",
+      "expansion": "tmux new -s ${name}"
+    },
+    "usage": {
+      "prompt_tokens": 479,
+      "completion_tokens": 21,
+      "total_tokens": 500,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 479
+    },
+    "title": "How do you use tmux in your daily workflow?",
+    "score": 1.0,
+    "observed": "alias tmuxnew='tmux new -s ${name}'"
+  }
+]

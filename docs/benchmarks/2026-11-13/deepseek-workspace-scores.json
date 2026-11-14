@@ -1,0 +1,194 @@
+[
+  {
+    "task": "user_task_0",
+    "domain": "calendar",
+    "arm": "plain",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.49
+  },
+  {
+    "task": "user_task_0",
+    "domain": "calendar",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.81
+  },
+  {
+    "task": "user_task_1",
+    "domain": "calendar",
+    "arm": "plain",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.172
+  },
+  {
+    "task": "user_task_1",
+    "domain": "calendar",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.136
+  },
+  {
+    "task": "user_task_2",
+    "domain": "calendar",
+    "arm": "plain",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.449
+  },
+  {
+    "task": "user_task_2",
+    "domain": "calendar",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.217
+  },
+  {
+    "task": "user_task_3",
+    "domain": "calendar",
+    "arm": "plain",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.463
+  },
+  {
+    "task": "user_task_3",
+    "domain": "calendar",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": true,
+    "seconds": 1.846
+  },
+  {
+    "task": "user_task_11",
+    "domain": "calendar",
+    "arm": "plain",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.362
+  },
+  {
+    "task": "user_task_11",
+    "domain": "calendar",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.717
+  },
+  {
+    "task": "user_task_14",
+    "domain": "email",
+    "arm": "plain",
+    "status": "scored",
+    "utility": true,
+    "seconds": 1.744
+  },
+  {
+    "task": "user_task_14",
+    "domain": "email",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.307
+  },
+  {
+    "task": "user_task_17",
+    "domain": "email",
+    "arm": "plain",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.02
+  },
+  {
+    "task": "user_task_17",
+    "domain": "email",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.366
+  },
+  {
+    "task": "user_task_24",
+    "domain": "email",
+    "arm": "plain",
+    "status": "scored",
+    "utility": true,
+    "seconds": 1.854
+  },
+  {
+    "task": "user_task_24",
+    "domain": "email",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.246
+  },
+  {
+    "task": "user_task_26",
+    "domain": "drive",
+    "arm": "plain",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.061
+  },
+  {
+    "task": "user_task_26",
+    "domain": "drive",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.694
+  },
+  {
+    "task": "user_task_27",
+    "domain": "drive",
+    "arm": "plain",
+    "status": "scored",
+    "utility": false,
+    "seconds": 1.887
+  },
+  {
+    "task": "user_task_27",
+    "domain": "drive",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.083
+  },
+  {
+    "task": "user_task_28",
+    "domain": "drive",
+    "arm": "plain",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.173
+  },
+  {
+    "task": "user_task_28",
+    "domain": "drive",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": true,
+    "seconds": 2.423
+  },
+  {
+    "task": "user_task_30",
+    "domain": "drive",
+    "arm": "plain",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.408
+  },
+  {
+    "task": "user_task_30",
+    "domain": "drive",
+    "arm": "ariadne_label_gate",
+    "status": "scored",
+    "utility": false,
+    "seconds": 2.78
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "kind": "scripted_gui_metric_control",
+  "full_episodes": 0,
+  "upstream": "a05b8bd04629e19a9a06bf04f8e0c5b53549d16c",
+  "case_evaluator_only": "own_reddit_1_specific_delete_txt_language",
+  "spec": {
+    "func": "check_path_existence",
+    "result": {
+      "type": "vm_dir_path",
+      "path": "ChatOverflow",
+      "start_from": "/home/user/"
+    }
+  },
+  "observations": [
+    {
+      "phase": "before",
+      "score": 0,
+      "png_sha256": "f3abf5b96eba2952c8e328af986fff0b48c4c6d49172590656233d5d74a883b7"
+    },
+    {
+      "phase": "after_gui_create",
+      "score": 1,
+      "png_sha256": "73a9bd3196148f92b803d6fb2f57ea48428ebd0bce1b8fc2e9749e8b35425635"
+    },
+    {
+      "phase": "after_cleanup",
+      "score": 0,
+      "png_sha256": "621ed2cb8a27f6939870fab6f3534abc539cb5d2a2b4b2a3549f220edd9191a4"
+    }
+  ],
+  "status": "passed"
+}

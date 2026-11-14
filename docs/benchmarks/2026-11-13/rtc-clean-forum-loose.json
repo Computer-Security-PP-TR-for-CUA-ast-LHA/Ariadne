@@ -1,0 +1,67 @@
+{
+  "case": "own_reddit_1_loose_delete_txt_language",
+  "revision": "a05b8bd04629e19a9a06bf04f8e0c5b53549d16c",
+  "page": "http://127.0.0.1:9999/f/coolgithubprojects/103666/i-made-a-browser-extension-that-displays-ai-generated",
+  "observation": {
+    "title": "I made a browser extension that displays AI-generated answers to StackOverflow questions",
+    "links": [
+      "/f/coolgithubprojects",
+      "http://127.0.0.1:9999/submission_images/b4ba4f2a7c2bd86e1e4feb018ae878ef8132e1b20d96dd571ffa1517d8879e6b.gif",
+      "/user/jsonathan",
+      "/f/coolgithubprojects",
+      "http://127.0.0.1:9999/submission_images/b4ba4f2a7c2bd86e1e4feb018ae878ef8132e1b20d96dd571ffa1517d8879e6b.gif",
+      "/f/coolgithubprojects/103666/i-made-a-browser-extension-that-displays-ai-generated",
+      "/login",
+      "/registration",
+      "/f/coolgithubprojects/103666/i-made-a-browser-extension-that-displays-ai-generated",
+      "/f/coolgithubprojects/103666/i-made-a-browser-extension-that-displays-ai-generated/linear",
+      "/user/LAcuber",
+      "/f/coolgithubprojects/103666/-/comment/1778160",
+      "/user/1h8fulkat",
+      "/f/coolgithubprojects/103666/-/comment/1780371",
+      "/f/coolgithubprojects/103666/-/comment/1778160",
+      "/user/heyheyhey27",
+      "/f/coolgithubprojects/103666/-/comment/1781059",
+      "/f/coolgithubprojects/103666/-/comment/1780371",
+      "/user/LAcuber",
+      "/f/coolgithubprojects/103666/-/comment/1780408",
+      "/f/coolgithubprojects/103666/-/comment/1780371",
+      "/user/jsonathan",
+      "https://chatoverflow.ai",
+      "https://github.com/shobrook/ChatOverflow",
+      "/f/coolgithubprojects/103666/-/comment/1778013",
+      "/user/bengouk",
+      "/f/coolgithubprojects/103666/-/comment/1778538",
+      "/user/the_aligator6",
+      "/f/coolgithubprojects/103666/-/comment/1784485",
+      "/f/coolgithubprojects/103666/-/comment/1778538",
+      "/user/RudeAlarm",
+      "/f/coolgithubprojects/103666/-/comment/1781021"
+    ]
+  },
+  "choice": {
+    "url": "https://github.com/shobrook/ChatOverflow"
+  },
+  "checkout": "all paths except demo.gif",
+  "model": "deepseek-flash",
+  "usage": [
+    {
+      "prompt_tokens": 616,
+      "completion_tokens": 16,
+      "total_tokens": 632,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 616
+    }
+  ],
+  "origin": "https://github.com/shobrook/ChatOverflow",
+  "head": "ec04c1bb105ae5b163e022a6ab309c4691c4fd8c",
+  "scores": [
+    0,
+    1,
+    0
+  ],
+  "scope": "clean objective, host DOM, fixed guest git action"
+}

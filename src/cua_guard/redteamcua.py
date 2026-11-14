@@ -165,26 +165,38 @@ def main():
     from desktop_env.desktop_env import DesktopEnv
     from lib_run_single import run_single_example
     example = json.loads(args.example.read_text(encoding="utf-8"))
-    args.output.mkdir(parents=True, exist_ok=True)
     run_id = str(uuid4())
-    store = PersistentLabelStore(args.output / (run_id + "-primary.sqlite"),
-                                 args.output / (run_id + "-labels.sqlite"), scope_id=run_id)
-    recovery = SQLiteRecoveryStore(args.output / (run_id + "-recovery.sqlite"))
-    raw = DesktopEnv(provider_name="vmware", path_to_vm=args.vm_path,
-                     action_space="pyautogui", headless=True, require_a11y_tree=True)
-    env = GuardedDesktopEnv(raw)
+    run_directory = args.output / run_id
+    run_directory.mkdir(parents=True, exist_ok=False)
+    metadata = {"scope_id": run_id, "case_id": example["id"], "upstream": actual,
+                "model": client.model, "status": "started"}
+    manifest = run_directory / "ariadne.json"
+    manifest.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    print(f"Run directory: {run_directory}", flush=True)
+    store = PersistentLabelStore(run_directory / "primary.sqlite",
+                                 run_directory / "labels.sqlite", scope_id=run_id)
+    raw = None
     try:
+        recovery = SQLiteRecoveryStore(run_directory / "recovery.sqlite")
+        raw = DesktopEnv(provider_name="vmware", path_to_vm=args.vm_path,
+                         action_space="pyautogui", headless=True, require_a11y_tree=True)
+        env = GuardedDesktopEnv(raw)
         agent = AriadnePromptAgent(client, store, env, recovery)
         run_single_example(agent, "PromptAgent", env, example, args.max_steps,
                            example["instruction"], SimpleNamespace(sleep_after_execution=1),
-                           str(args.output), [])
-        (args.output / "ariadne.json").write_text(json.dumps({
+                           str(run_directory), [])
+        manifest.write_text(json.dumps({**metadata, "status": "completed",
             "kind": "live_model_full_gui", "model": client.model, "usage": client.usage,
             "repairs": agent.session.repairs,
             "alerts": [alert.as_dict() for alert in agent.session.alerts],
             "scope_id": run_id}, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception as exc:
+        manifest.write_text(json.dumps({**metadata, "status": "failed",
+                                        "error_type": type(exc).__name__}, indent=2), encoding="utf-8")
+        raise
     finally:
-        raw.close()
+        if raw is not None:
+            raw.close()
         store.close()
 
 
