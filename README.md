@@ -8,6 +8,8 @@ Persistent provenance and targeted repair for computer-use agents.
 
 **11 月 14 日联合验收。** 同伴已校验 864/864 份配置。本地 DeepSeek 对同一索引逐项检测，860/864 项取得可定位的污染证据。Reddit 正常目标完成 3 题 × 2 种表述的限定动作验证，完整对抗桌面 episode 为 0/864。[答辩进度与缺口](Procedure.md#中期答辩验收清单) · [同伴的环境记录](reports/full_benchmark_attempt_20261113.md)
 
+**11 月 15 日 AgentDojo 全量评测。** 97 道正常任务均取得双组官方评分（普通组 87/97，精确授权标签门组 55/97）。629 个安全组合中，160 个完成原版双组评分，469 个完成受控检测。详见[中文 PDF](reports/agentdojo_20261115/AgentDojo-midterm.pdf)与[逐例数据和限制](reports/agentdojo_20261115/README.md)。
+
 ## 当前方向：复用、集成与补强
 
 **2026-11-13 更新。** 项目面向 CUA 的跨会话持久状态污染，优先复用前人已有的标签、溯源图、权限控制、检测与修复成果，形成统一代码库，再接入 benchmark 和桌面 ChatGPT 做验证。

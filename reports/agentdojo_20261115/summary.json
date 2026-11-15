@@ -1,0 +1,107 @@
+{
+  "protocol": "AgentDojo 0.1.34 / v1 / DeepSeek Flash",
+  "normal": {
+    "plain": {
+      "n": 97,
+      "passed": 87,
+      "denied_cases": 0,
+      "seconds_median": 4.765,
+      "tokens": 1288258
+    },
+    "gate": {
+      "n": 97,
+      "passed": 55,
+      "denied_cases": 38,
+      "seconds_median": 5.901,
+      "tokens": 1481990
+    }
+  },
+  "security": {
+    "plain": {
+      "n": 160,
+      "scored": 160,
+      "utility": 138,
+      "goal": 7,
+      "exposed": 80,
+      "already_mentioned": 0
+    },
+    "gate": {
+      "n": 160,
+      "scored": 160,
+      "utility": 103,
+      "goal": 6,
+      "exposed": 80,
+      "already_mentioned": 0
+    }
+  },
+  "domain": {
+    "workspace": [
+      40,
+      34,
+      24
+    ],
+    "travel": [
+      20,
+      17,
+      12
+    ],
+    "banking": [
+      16,
+      16,
+      8
+    ],
+    "slack": [
+      21,
+      20,
+      11
+    ]
+  },
+  "repeat": {
+    "plain": {
+      "n": 34,
+      "passed": 33,
+      "denied_cases": 0,
+      "seconds_median": 5.715,
+      "tokens": 687212
+    },
+    "gate": {
+      "n": 34,
+      "passed": 2,
+      "denied_cases": 31,
+      "seconds_median": 7.9575,
+      "tokens": 746357
+    }
+  },
+  "paired": {
+    "(True, True)": 54,
+    "(False, False)": 9,
+    "(True, False)": 33,
+    "(False, True)": 1
+  },
+  "controlled": {
+    "n": 469,
+    "unique": 115,
+    "ariadne": 463,
+    "unknown": 0,
+    "errors": 0,
+    "reference": 162,
+    "additional": 301,
+    "reverse": 0
+  },
+  "negative": {
+    "n": 97,
+    "unique": 25,
+    "ariadne": 1,
+    "unknown": 16,
+    "errors": 0,
+    "reference": 4,
+    "additional": 0,
+    "reverse": 3
+  },
+  "repaired": 463,
+  "continued": 463,
+  "resumed_pass": 256,
+  "overlaps": 463,
+  "calls": 4604,
+  "tokens": 17605034
+}
