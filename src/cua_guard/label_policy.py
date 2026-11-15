@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .label_store import Confidentiality, LabelConflict, PersistentLabelStore
+from .label_store import Confidentiality, Integrity, LabelConflict, PersistentLabelStore
 
 
 @dataclass(frozen=True)
@@ -37,6 +37,7 @@ class HostGrant:
     max_confidentiality: Confidentiality = Confidentiality.PUBLIC
     allowed_principals: frozenset[str] = frozenset()
     confirmation_id: str | None = None
+    require_trusted_evidence: bool = False
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,8 @@ def check_action(store: PersistentLabelStore, action: Action,
                 return Decision(False, "changed_evidence")
             if "unknown" in record.label.origins:
                 return Decision(False, "unknown_origin")
+            if grant.require_trusted_evidence and record.label.integrity != Integrity.TRUSTED:
+                return Decision(False, "untrusted_evidence")
             if rank[record.label.confidentiality] > rank[grant.max_confidentiality]:
                 return Decision(False, "confidentiality_exceeds_grant")
             if record.label.principals and not record.label.principals <= grant.allowed_principals:

@@ -1,6 +1,6 @@
 # Ariadne 技术详解：前人成果复用、系统设计与实现路线
 
-更新于 2026-11-10。第 2 节记录当前主线的模块职责和接口，第 11 节列出四人交付顺序。标注为“设计稿”或“拟实现”的段落保留 11 月 1 日的原始方案，资源数字也对应当时的采样。最新运行证据见 [Procedure.md](Procedure.md)。
+更新于 2026-11-10。第 2 节记录当前主线的模块职责和接口，第 11 节列出四人交付顺序。标注为“设计稿”或“拟实现”的段落保留 11 月 1 日的原始方案，资源数字也对应当时的采样。最新运行证据见 [研发进度历史](progress-history.md)。
 
 ## 目录
 
@@ -45,7 +45,7 @@ CUA 读取外部网页、邮件、文件或工具输出后，可能把其中的�
 | 宿主事件 → 图 → 快照 | `ProvenanceRecorder` 接收宿主事件。图 v1 保存 user_input、step、memory 和十类关系。纯 chain 边只表达先后。恢复适配器校验图，按 memory ID 及 derive/supersede 投影为恢复 v0.2 快照 | 逐一核对 writer 消费的版本与生成的版本，缺失引用应阻断修复 |
 | 恢复 → 标签与上下文 | LangGraph/SqliteSaver 保存执行位置，SRR 重放支持的纯 writer。恢复库暂存候选与效果记录，发布时双份标签确认 manifest，随后确认上下文并重新授权动作 | 中断后重复请求应复用已提交结果；未知外部效果进入核查 |
 
-接口定义与样例见[标签桥接协议](docs/label-layer.md)、[图输入及导出约定](docs/provenance/integration-ports.md)和[恢复实现](docs/recovery/implementation.md)。本轮测试范围及端到端缺口见[进展报告](Procedure.md)。
+接口定义与样例见[标签桥接协议](label-layer.md)、[图输入及导出约定](provenance/integration-ports.md)和[恢复实现](recovery/implementation.md)。本轮测试范围及端到端缺口见[进展报告](progress-history.md)。
 
 ### 2.2 硬件与磁盘
 
@@ -161,7 +161,7 @@ flowchart TB
 
 ### 5.1 现有数据库究竟是什么
 
-[store.py](src/cua_guard/store.py) 使用 Python 标准库 SQLite。数据库引擎不是我们发明的；当前表结构、版本操作和来源传播是自写研究原型。构造 `ProvenanceStore(path)` 时创建/打开文件，无需单独启动数据库服务。
+[store.py](../src/cua_guard/store.py) 使用 Python 标准库 SQLite。数据库引擎不是我们发明的；当前表结构、版本操作和来源传播是自写研究原型。构造 `ProvenanceStore(path)` 时创建/打开文件，无需单独启动数据库服务。
 
 演示和单元测试经常使用临时目录，所以实现了跨关闭/重开的保存机制，不代表已有一个长期运行、积累真实轨迹的生产数据库。
 
@@ -221,11 +221,11 @@ finally:
 
 ### 6.1 现有实现怎样判断
 
-[gate.py](src/cua_guard/gate.py) 的 `ExecutionGate` 对精确 task/operation/resource/recipient capability 做匹配，同时检查依据版本是否存在、active、hash 一致及来源是否 unknown。[runtime.py](src/cua_guard/runtime.py) 将工具名和完整 JSON 参数的摘要绑定到执行请求。
+[gate.py](../src/cua_guard/gate.py) 的 `ExecutionGate` 对精确 task/operation/resource/recipient capability 做匹配，同时检查依据版本是否存在、active、hash 一致及来源是否 unknown。[runtime.py](../src/cua_guard/runtime.py) 将工具名和完整 JSON 参数的摘要绑定到执行请求。
 
 例如可信任务只授权向指定接收方提交指定报告，网页中要求改变接收方的文字不能自行生成 capability。外部资料可用于报告内容，但不能因此决定新的权限。
 
-现在 [agentlab.py](src/cua_guard/agentlab.py) 的 Email policy 只允许读邮件/联系人等操作。它是受控例子，不是能自动解析任意用户意图的通用权限系统。
+现在 [agentlab.py](../src/cua_guard/agentlab.py) 的 Email policy 只允许读邮件/联系人等操作。它是受控例子，不是能自动解析任意用户意图的通用权限系统。
 
 ### 6.2 拒绝以后会发生什么
 
@@ -252,7 +252,7 @@ finally:
 
 ### 7.1 当前检测器与拟复用检测器
 
-当前 [semantic.py](src/cua_guard/semantic.py) 向模型提供可信任务与待查内容，要求返回 clean/polluted/unknown、原因和原文子串证据。程序检查格式和证据是否确实存在于原文。
+当前 [semantic.py](../src/cua_guard/semantic.py) 向模型提供可信任务与待查内容，要求返回 clean/polluted/unknown、原因和原文子串证据。程序检查格式和证据是否确实存在于原文。
 
 这只能排除部分无依据输出，不能保证判定正确。模型可能误报、漏报或受攻击；当前同一模型还承担净化与复检，存在相关错误。主流程没有真实模型效果验收，不能将其当作成熟检测器。
 
@@ -282,7 +282,7 @@ flowchart LR
 
 ### 7.3 从告警找到候选范围
 
-当前 [repair.py](src/cua_guard/repair.py) 从 call 的 bindings 反向遍历父边，得到可检查的祖先集合。原型在检测支持下选择候选根，再正向遍历后代闭包。
+当前 [repair.py](../src/cua_guard/repair.py) 从 call 的 bindings 反向遍历父边，得到可检查的祖先集合。原型在检测支持下选择候选根，再正向遍历后代闭包。
 
 例如确认 P 含有影响当前动作的恶意指令，可以先保守隔离 P、N、C，保留独立的 Q、B。若只删除 P，C 仍可能在新会话被检索；若全局回滚到 P 之前，可能连后来正常的 B 也丢掉。这构成局部恢复需要比较的任务条件。
 
@@ -336,7 +336,7 @@ stateDiagram-v2
   NeedsReview --> Diagnosing: 获得新的有效证据
 ```
 
-图中的状态机是统一调度设计，不是当前已经存在的完整模块。当前 [runtime.py](src/cua_guard/runtime.py) 已支持上下文替换、checkpoint 和恢复前重检，但异常后通常停止，尚未具备上述所有迁移。
+图中的状态机是统一调度设计，不是当前已经存在的完整模块。当前 [runtime.py](../src/cua_guard/runtime.py) 已支持上下文替换、checkpoint 和恢复前重检，但异常后通常停止，尚未具备上述所有迁移。
 
 ### 8.3 安全续行的必要条件
 
@@ -368,7 +368,7 @@ stateDiagram-v2
 
 ### 9.3 对照组
 
-端到端实验沿用[数据推荐](数据推荐.md)的编号：B0 为普通记忆，B1 为写入过滤，B2 为只记录来源，B3 为启用 Ariadne 防护，B4 为关闭跨会话记忆。B4 仍可接触当轮恶意输入。恢复实验固定已污染快照和定位证据；下表的 Gate-only 保留执行门并关闭状态修复。结果表中同时保存组名与实际启用的组件。
+端到端实验沿用[数据推荐](research/evaluation-plan.md)的编号：B0 为普通记忆，B1 为写入过滤，B2 为只记录来源，B3 为启用 Ariadne 防护，B4 为关闭跨会话记忆。B4 仍可接触当轮恶意输入。恢复实验固定已污染快照和定位证据；下表的 Gate-only 保留执行门并关闭状态修复。结果表中同时保存组名与实际启用的组件。
 
 | 组别 | 配置 | 回答的问题 |
 |---|---|---|
@@ -385,7 +385,7 @@ stateDiagram-v2
 
 ### 9.4 结果记录和指标
 
-RTC-Bench 的固定 runner 在任务结束时分别写入 `result.txt`（正常任务评分）和 `adversary_result.txt`（攻击目标评分）。当前包装器将指定的输出目录直接传给 runner。批量实验应按 case、组别与重复轮次分配目录，并在外层记录失败及缺分原因。11 月 10 日实测范围见[进展报告](Procedure.md)。
+RTC-Bench 的固定 runner 在任务结束时分别写入 `result.txt`（正常任务评分）和 `adversary_result.txt`（攻击目标评分）。当前包装器将指定的输出目录直接传给 runner。批量实验应按 case、组别与重复轮次分配目录，并在外层记录失败及缺分原因。11 月 10 日实测范围见[进展报告](progress-history.md)。
 
 每次运行保存任务/配置摘要、模型与时间、上游 commit、攻击预算、观测/写入、检测证据、授权决定、修复映射和真实效果。凭据、个人数据和大体积镜像不进入共享日志。
 
@@ -498,15 +498,15 @@ OpenAPPA 官方 Windows 压缩包来自 [v0.38.1 Release](https://github.com/arc
 
 | 文件 | 作用 |
 |---|---|
-| [store.py](src/cua_guard/store.py) | SQLite 版本、来源、依赖、隔离和替代记录 |
-| [gate.py](src/cua_guard/gate.py) | 原型精确 capability、版本检查和 dispatch |
-| [repair.py](src/cua_guard/repair.py) | 调用祖先查询与保守隔离计划 |
-| [semantic.py](src/cua_guard/semantic.py) | 原型模型检测、净化和复检流程 |
-| [runtime.py](src/cua_guard/runtime.py) | 宿主上下文、checkpoint 和参数绑定 |
-| [agentlab.py](src/cua_guard/agentlab.py) | 受控 AgentLAB Email 工具循环 |
-| [redteamcua.py](src/cua_guard/redteamcua.py) | 原始 runner 协议与有限 GUI 动作包装 |
-| [demo.py](src/cua_guard/demo.py) | 无模型的确定性机制演示 |
-| [tests](tests) | 主线机制与集成回归，运行记录见 Procedure.md |
+| [store.py](../src/cua_guard/store.py) | SQLite 版本、来源、依赖、隔离和替代记录 |
+| [gate.py](../src/cua_guard/gate.py) | 原型精确 capability、版本检查和 dispatch |
+| [repair.py](../src/cua_guard/repair.py) | 调用祖先查询与保守隔离计划 |
+| [semantic.py](../src/cua_guard/semantic.py) | 原型模型检测、净化和复检流程 |
+| [runtime.py](../src/cua_guard/runtime.py) | 宿主上下文、checkpoint 和参数绑定 |
+| [agentlab.py](../src/cua_guard/agentlab.py) | 受控 AgentLAB Email 工具循环 |
+| [redteamcua.py](../src/cua_guard/redteamcua.py) | 原始 runner 协议与有限 GUI 动作包装 |
+| [demo.py](../src/cua_guard/demo.py) | 无模型的确定性机制演示 |
+| [tests](../tests) | 主线机制与集成回归，运行记录见[研发进度历史](progress-history.md) |
 
 本地另有 `upstreams.py`、`demo_reused_authority.py`、`check_reuse.py` 等未提交接入实验，本文不提供指向仓库中不存在文件的运行链接。队友可从上表的固定原始仓库审查实现；后续发布适配代码时，再补充可执行安装说明、依赖锁和验证输出。
 

@@ -252,6 +252,7 @@ class LabelSession:
         if not decision.allowed:
             reason = ("missing_authority" if decision.reason in
                       {"outside_host_grant", "missing_direct_confirmation"} else
+                      "untrusted_evidence" if decision.reason == "untrusted_evidence" else
                       "integrity_mismatch" if decision.reason in
                       {"inactive_evidence", "changed_evidence", "label_conflict"} else "unknown")
             self._alert(call_id, reason, decision.reason,

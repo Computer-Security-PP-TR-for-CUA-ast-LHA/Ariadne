@@ -18,7 +18,7 @@
 | ACRFence | [论文](https://arxiv.org/abs/2603.20625)；语义重试与授权复活问题 | 作者 artifact 尚未核实。实现思想适配：持久业务操作身份、效果账本、一次性授权、撤销 epoch、未知效果暂停；不声称完成论文协议复现 |
 | MnemoIR | [MIT 仓库](https://github.com/DheerajPranav/mnemo-ir)，本轮固定 `3e83d8337545b9254c1165d69ea84e0016e7de4c` | 阅读 impact/remediation/replay/models，运行原始 impact/remediation/replay 的 20 项离线测试通过。适合事件响应 API 和对照；暂不作为生产恢复执行底座，原因见下 |
 | LangGraph | [官方 persistence 文档](https://docs.langchain.com/oss/python/langgraph/persistence) | 有 checkpoint/store 基础设施，不能单独解决污染传播或外部副作用。当前项目是标准库内核，为这部分引入完整 agent 框架会扩大依赖；保留 ProjectionPort 后续适配 |
-| OpenAPPA / Fides | [OpenAPPA](https://github.com/archestra-ai/OpenAPPA) / [Fides](https://github.com/microsoft/fides)；此前 Details.md 已记录的策略/标签候选 | 属于成员 2 的策略与信息流边界，保留既有调研。本轮未将未通过的实际 redactor 路径或教学 notebook 当作完成的持久恢复服务 |
+| OpenAPPA / Fides | [OpenAPPA](https://github.com/archestra-ai/OpenAPPA) / [Fides](https://github.com/microsoft/fides)；此前 [组件设计](../design.md) 已记录的策略/标签候选 | 属于成员 2 的策略与信息流边界，保留既有调研。本轮未将未通过的实际 redactor 路径或教学 notebook 当作完成的持久恢复服务 |
 
 ## 为什么不能直接把某个仓库整体接上
 

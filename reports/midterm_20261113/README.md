@@ -5,7 +5,7 @@
 **Benchmark**：RedTeamCUA / RTC-Bench  
 **运行范围**：三平台完整 metadata preflight；不是模型驱动的端到端 ASR 测试
 
-团队合并后的进度与本机 DeepSeek 数据见 [中期答辩验收清单](Procedure.md#中期答辩验收清单)。下文保留 11 月 13 日 Ubuntu VM 的原始预检口径。
+团队合并后的进度与本机 DeepSeek 数据见 [中期答辩验收清单](../../docs/progress-history.md#中期答辩验收清单)。下文保留 11 月 13 日 Ubuntu VM 的原始预检口径。
 
 ## 1. 执行摘要
 
@@ -18,7 +18,7 @@
 | Rocket.Chat | 288 | 288 | 0 | 100% |
 | **合计** | **864** | **864** | **0** | **100%** |
 
-![平台验证结果](reports/midterm_20261113/platform_validation.png)
+![平台验证结果](platform_validation.png)
 
 这证明 VM 上的 RedTeamCUA 代码、scenario metadata、标签字段、配置步骤和权限/安全检查可以被完整读取和校验。它**不证明**模型已经执行任务，也不提供攻击成功率、正常任务成功率或防御效果结论。
 
@@ -33,13 +33,13 @@
 | 正常任务 | specific | 432 |
 | 正常任务 | loose | 432 |
 
-![Case 分布](reports/midterm_20261113/case_distribution.png)
+![Case 分布](case_distribution.png)
 
 每个平台的 injection type 和 benign task type 都是各 144 个，三平台分布一致，适合作为后续 baseline 的分层抽样基础。
 
 ## 3. Ariadne 目标架构
 
-![Ariadne 架构](docs/assets/architecture-integrated.png)
+![Ariadne 架构](../../docs/assets/architecture-integrated.png)
 
 ## 4. 远程运行证据
 
@@ -60,20 +60,20 @@
 3. Docker socket 对当前用户无权限，`docker ps` 返回 permission denied；
 4. 官方端到端执行还需要专用 VMware guest、网页服务和模型 provider 配置。
 
-![运行状态](reports/midterm_20261113/execution_status.png)
+![运行状态](execution_status.png)
 
 这些是环境阻断，不应用 0% 替代攻击成功率，也不应将 preflight 结果写成真实模型实验结果。下一步应先修复依赖和宿主运行链，再运行 `RedTeamCUA/run.py`。
 
 ## 6. 结果文件
 
-- [Reddit 原始结果](reports/midterm_20261113/reddit.json)
-- [OwnCloud 原始结果](reports/midterm_20261113/owncloud.json)
-- [Rocket.Chat 原始结果](reports/midterm_20261113/rocketchat.json)
-- [平台汇总 CSV](reports/midterm_20261113/platform_summary.csv)
-- [平台验证图](reports/midterm_20261113/platform_validation.png)
-- [Case 分布图](reports/midterm_20261113/case_distribution.png)
-- [运行状态图](reports/midterm_20261113/execution_status.png)
-- [Ariadne 架构图](docs/assets/architecture-integrated.png)
+- [Reddit 原始结果](reddit.json)
+- [OwnCloud 原始结果](owncloud.json)
+- [Rocket.Chat 原始结果](rocketchat.json)
+- [平台汇总 CSV](platform_summary.csv)
+- [平台验证图](platform_validation.png)
+- [Case 分布图](case_distribution.png)
+- [运行状态图](execution_status.png)
+- [Ariadne 架构图](../../docs/assets/architecture-integrated.png)
 
 ## 7. 中期汇报建议表述
 

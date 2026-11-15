@@ -2,7 +2,7 @@
 
 > 项目：Ariadne —— Persistent provenance and targeted repair for computer-use agents  
 > 目标：选择环境配置简单、容易复现、能支撑“持久记忆污染—后续动作—定向修复”实验的数据库、评测数据集和 Agent harness。  
-> 方案日期：2026-11-05。主线核查：2026-11-10，配置预检和运行记录见 [Procedure.md](Procedure.md)。
+> 方案日期：2026-11-05。主线核查：2026-11-10，配置预检和运行记录见 [研发进度历史](../progress-history.md)。
 
 ## 1. 结论摘要
 
