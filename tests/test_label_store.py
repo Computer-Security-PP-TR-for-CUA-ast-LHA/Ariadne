@@ -47,20 +47,20 @@ class LabelStoreTests(unittest.TestCase):
         self.assertEqual(record.label.authority, ActClass.NONE)
         self.assertEqual(record.parents, (user, page))
 
-    def test_confirmed_action_can_require_trusted_evidence(self):
-        from dataclasses import replace
-
-        grant = HostGrant("task", "send_email", "archive", "mock", confirmation_id="ok")
-        strict = replace(grant, require_trusted_evidence=True)
-        for channel in ("external", "user"):
-            node = self.store.ingest(channel, "same content", channel)
-            evidence = Evidence(node, self.store.read(node).content_hash)
-            action = Action("task", "send_email", "archive", "mock", (evidence,), risk="high")
-            self.assertTrue(check_action(self.store, action, grant).allowed)
-            decision = check_action(self.store, action, strict)
-            self.assertEqual(decision.allowed, channel == "user")
-            if channel == "external":
-                self.assertEqual(decision.reason, "untrusted_evidence")
+    def test_high_risk_requires_confirmation_and_trusted_evidence(self):
+        user = self.store.ingest("user", "fact", "user")
+        page = self.store.ingest("webpage", "fact", "external")
+        summary = self.store.derive("summary", "fact", (user, page))
+        for tool, risk in (("send_email", "high"), ("send_email", "low"), ("other", "high")):
+            grant = HostGrant("task", tool, "archive", "mock", confirmation_id="ok")
+            for node in (user, page, summary):
+                evidence = Evidence(node, self.store.read(node).content_hash)
+                action = Action("task", tool, "archive", "mock", (evidence,), risk=risk)
+                self.assertFalse(check_action(self.store, action, None).allowed)
+                result = check_action(self.store, action, grant)
+                self.assertEqual(result.allowed, node == user)
+                if node != user:
+                    self.assertEqual(result.reason, "untrusted_evidence")
 
     def test_unknown_inputs_never_become_trusted(self):
         node = self.store.derive("summary", "source not captured", ())
@@ -183,7 +183,7 @@ class LabelStoreTests(unittest.TestCase):
         self.assertEqual(check_action(self.store, action, grant).reason, "missing_direct_confirmation")
         confirmed = HostGrant("task1", "send_email", "contact-list", "attacker@example.test",
                               confirmation_id="host-confirmed-1")
-        self.assertTrue(check_action(self.store, action, confirmed).allowed)
+        self.assertEqual(check_action(self.store, action, confirmed).reason, "untrusted_evidence")
 
     def test_private_and_identity_scope(self):
         node = self.store.ingest("mail", "private", "tool",

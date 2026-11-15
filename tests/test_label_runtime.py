@@ -40,7 +40,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertFalse(self.session.alerts)
 
     def test_high_risk_confirmation_is_consumed_once(self):
-        self.session.capture("email", "meeting fact")
+        self.session.capture("user-note", "meeting fact", channel="user")
         def policy(name, args):
             resource = digest(canonical({"tool": name, "arguments": args}))
             return HostGrant("session", name, resource, "host-tool",

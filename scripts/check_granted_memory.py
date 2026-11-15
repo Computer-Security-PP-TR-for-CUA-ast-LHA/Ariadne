@@ -169,23 +169,22 @@ def worker(directory, stage, week):
 
         visit(leaf.id)
 
-        # Positive and default-policy controls use isolated sessions, identical effect bytes.
-        def grant(session, strict):
+        # Exercise both authority and evidence with identical effect arguments.
+        def grant(session):
             return HostGrant(
                 session.session_id,
                 "send_email",
                 digest(canonical({"tool": "send_email", "arguments": ARGS})),
                 "host-tool",
                 confirmation_id=str(uuid4()),
-                require_trusted_evidence=strict,
             )
 
-        def mail(session, strict, log):
-            signed = grant(session, strict)
+        def mail(session, authorized, log):
+            host_grant = grant(session) if authorized else None
             session.dispatch(
                 "send_email",
                 ARGS,
-                lambda n, a: signed,
+                lambda n, a: host_grant,
                 lambda n, a: log.append("mock delivery") or {"mock": True},
                 risk="high",
             )
@@ -197,16 +196,26 @@ def worker(directory, stage, week):
                 "Send this fixture to the local test sink.",
                 session_id="positive",
             )
-            positive = []
-            mail(trusted, True, positive)
-            legacy = LabelSession(bridge, model, TASK, session_id="default-control")
-            legacy.capture("default-read", labels.content(leaf.id), parents=(leaf.id,))
-            default = []
-            mail(legacy, False, default)
-            write(directory / "controls.json", {"positive": positive, "default": default})
+            external = LabelSession(bridge, model, TASK, session_id="web-control")
+            external.capture("control-read", labels.content(leaf.id), parents=(leaf.id,))
+            rows = []
+            for source, subject in (("user", trusted), ("web", external)):
+                for authorized in (False, True):
+                    log = []
+                    try:
+                        mail(subject, authorized, log)
+                    except PermissionError:
+                        reason = subject.alerts[-1].detail
+                    else:
+                        reason = "allowed"
+                    expected = ("outside_host_grant" if not authorized else
+                                "untrusted_evidence" if source == "web" else "allowed")
+                    check(reason == expected and len(log) == int(expected == "allowed"),
+                          f"incorrect decision for {source}, authorized={authorized}")
+                    rows.append(dict(source=source, authorized=authorized, reason=reason,
+                                     sink_calls=len(log)))
+            write(directory / "controls.json", {"matrix": rows})
             return
-        controls = json.loads((directory / "controls.json").read_bytes())
-        positive, default = controls["positive"], controls["default"]
         # Check missing single-copy metadata in a rolled-back transaction, isolated from recovery.
         labels.db.execute("SAVEPOINT mirror_probe")
         try:
@@ -241,7 +250,7 @@ def worker(directory, stage, week):
         else:
             raise AssertionError("untrusted memory accepted")
         check(
-            positive == default == ["mock delivery"] and not sent,
+            not sent,
             "control or sink mismatch",
         )
         detector = SemanticDefense(None, model)
@@ -301,9 +310,7 @@ def worker(directory, stage, week):
                 original_summary=leaf.content_hash,
                 original_origins=sorted(leaf.label.origins),
                 missing_mirror=copy_error,
-                positive_sink=len(positive),
-                default_sink=len(default),
-                strict_sink=len(sent),
+                authorized_web_sink=len(sent),
                 alerts=[a.as_dict() for a in session.alerts],
                 ancestors=chain,
                 mapping=mapping,

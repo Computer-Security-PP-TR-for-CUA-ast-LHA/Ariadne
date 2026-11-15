@@ -56,7 +56,10 @@ def check_action(store: PersistentLabelStore, action: Action,
     if grant is None or (action.task_id, action.operation, action.resource, action.recipient) != (
             grant.task_id, grant.operation, grant.resource, grant.recipient):
         return Decision(False, "outside_host_grant")
-    if action.risk == "high" and not grant.confirmation_id:
+    # Email delivery always carries an external side effect, including callers
+    # that rely on Action's default risk classification.
+    high_risk = action.risk == "high" or action.operation == "send_email"
+    if high_risk and not grant.confirmation_id:
         return Decision(False, "missing_direct_confirmation")
     if not action.evidence:
         return Decision(False, "missing_evidence")
@@ -71,7 +74,7 @@ def check_action(store: PersistentLabelStore, action: Action,
                 return Decision(False, "changed_evidence")
             if "unknown" in record.label.origins:
                 return Decision(False, "unknown_origin")
-            if grant.require_trusted_evidence and record.label.integrity != Integrity.TRUSTED:
+            if (high_risk or grant.require_trusted_evidence) and record.label.integrity != Integrity.TRUSTED:
                 return Decision(False, "untrusted_evidence")
             if rank[record.label.confidentiality] > rank[grant.max_confidentiality]:
                 return Decision(False, "confidentiality_exceeds_grant")
