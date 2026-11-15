@@ -341,10 +341,12 @@ class SQLiteRecoveryStore:
             self._audit(db, request.scope_id, 'ready', {'request_id': request.request_id, 'revision': job['revision']})
             return job
 
-    def fail(self, request, code):
+    def fail(self, request, code, *, review=None):
         with self._tx() as db:
             job = self._owned(db, request)
             job['error'] = code  # retain durable phase for explicit retry
+            if review is not None:
+                job['last_validation_rejection'] = review
             self._save(db, job)
             self._audit(db, request.scope_id, 'needs_review', {'request_id': request.request_id, 'code': code})
             return job

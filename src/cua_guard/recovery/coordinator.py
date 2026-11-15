@@ -1,5 +1,5 @@
 """Domain recovery policy on the upstream LangGraph durable execution engine."""
-from .contracts import RecoveryError, Version
+from .contracts import RecoveryError, Version, digest
 from .dgrr import DGRRReachability
 from .graph import VersionGraph
 from .workflow import invoke_recovery
@@ -69,9 +69,17 @@ class RecoveryCoordinator:
         if not isinstance(outputs, tuple) or not 1 <= len(outputs) <= 16 or any(
             not isinstance(s, str) or not s.strip() or len(s) > 100_000 for s in outputs):
             raise RecoveryError('invalid_replacement')
-        validation = self.validator.validate(old, outputs, request.task)
+        contextual = getattr(self.validator, 'validate_with_inputs', None)
+        validation = (contextual(old, tuple(inputs), outputs, request.task) if contextual
+                      else self.validator.validate(old, outputs, request.task))
         if not validation.accepted():
-            raise RecoveryError('validation_rejected')
+            raise RecoveryError('validation_rejected', review={
+                'target': old.version_id, 'artifact': old.artifact_id,
+                'input_ids': [v.version_id for v in inputs],
+                'candidates': [{'sha256': digest(s), 'preview': s[:512]} for s in outputs],
+                'safe': validation.safe, 'faithful': validation.faithful,
+                'evidence': validation.evidence,
+            })
         if len(nodes) + sum(len(s['versions']) for s in job['staged'].values()) + len(outputs) > self.max_nodes:
             raise RecoveryError('graph_budget_exceeded')
         if (sum(len(v.content) for v in nodes.values())

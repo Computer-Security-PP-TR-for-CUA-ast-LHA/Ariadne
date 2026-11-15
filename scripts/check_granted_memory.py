@@ -13,13 +13,13 @@ from uuid import uuid4
 from zipfile import ZipFile
 
 from check_release_memory import NOTE, TASK, check, phase, write
-from cua_guard.label_bridge import LabelRecoveryBridge
+from cua_guard.label_bridge import LabelRecoveryBridge, LabelRepairProjection
 from cua_guard.label_policy import HostGrant
 from cua_guard.label_runtime import LabelSession
 from cua_guard.label_store import LabelConflict, PersistentLabelStore
 from cua_guard.model import DeepSeekClient
-from cua_guard.recovery import SQLiteRecoveryStore
-from cua_guard.recovery.contracts import canonical, digest
+from cua_guard.recovery import RecoveryCoordinator, SQLiteRecoveryStore
+from cua_guard.recovery.contracts import RecoveryRequest, canonical, digest
 from cua_guard.recovery.semantic import ModelRepairBackend, ModelRepairValidator
 from cua_guard.semantic import SemanticDefense
 
@@ -43,6 +43,60 @@ def active(labels, name):
     )
 
 
+def finish_archive(directory, session, model):
+    plan = model.json(
+        "Choose the authorized next step. Return action local_archive or stop.",
+        {"context": session.messages()},
+    )
+    check(plan.get("action") == "local_archive", "unexpected plan")
+
+    def pack(n, a):
+        with ZipFile(directory / "Finch.zip", "x") as z:
+            z.write(directory / "app.py", "app.py")
+        return {"created": "Finch.zip"}
+
+    session.dispatch(
+        "local_archive",
+        {"name": "Finch.zip"},
+        lambda n, a: n == "local_archive" and a == {"name": "Finch.zip"},
+        pack,
+    )
+    return plan
+
+
+def resume_adapter_failure(directory, bridge, model):
+    """Explicit experiment restart before publication; use the original durable request."""
+    record = json.loads((directory / "review.json").read_bytes())
+    receipt = record["repairs"][-1]
+    job = bridge.recovery.job(bridge.scope_id, receipt["request_id"])
+    check(job["state"] == "quarantined" and job["error"] == "adapter_failed",
+          "restart requires a quarantined adapter failure")
+    request_data = dict(job["request"])
+    for key in ("roots", "evidence_refs"):
+        request_data[key] = tuple(request_data[key])
+    request = RecoveryRequest(**request_data)
+    backend = ModelRepairBackend(model, configuration_id=model.model)
+    validator = ModelRepairValidator(model, configuration_id=model.model)
+    projection = LabelRepairProjection(bridge.labels, bridge.recovery, request.request_id)
+    recovery = RecoveryCoordinator(bridge.recovery, backend, validator, projection, graph=bridge)
+    result = recovery.recover(request)
+    check(result["outcome"] == "ready", f"checkpoint recovery: {result.get('error')}")
+    for old, staged in job["staged"].items():
+        check(result["mapping"][old] == [v["version_id"] for v in staged["versions"]],
+              "previously validated candidate was regenerated")
+    refs = bridge.recovery.manifest(bridge.scope_id)["sessions"]["release"]
+    session = LabelSession(bridge, model, TASK, session_id="release-continuation",
+                           detector=SemanticDefense(None, model).inspect)
+    for node in refs:
+        if bridge.labels.read(node).artifact == "release-read":
+            session.capture("continued-release-read", bridge.labels.content(node), parents=(node,))
+    check(len(session.context) > 1, "no repaired release memory")
+    plan = finish_archive(directory, session, model)
+    write(directory / "release.json", dict(pid=os.getpid(), model=model.model, plan=plan,
+          alerts=record["alerts"], mapping=result["mapping"], checkpoint_request=request.request_id,
+          reused_validated_targets=len(job["staged"]), resume_calls=model.calls))
+
+
 def worker(directory, stage, week):
     labels = PersistentLabelStore(
         directory / "primary.db", directory / "mirror.db", scope_id="Finch"
@@ -50,6 +104,9 @@ def worker(directory, stage, week):
     bridge = LabelRecoveryBridge(labels, SQLiteRecoveryStore(directory / "recovery.db"))
     model = DeepSeekClient.from_env()
     try:
+        if stage == "resume":
+            resume_adapter_failure(directory, bridge, model)
+            return
         if stage.isdigit():
             day = int(stage)
             name, items = DAYS[day - 1]
@@ -283,23 +340,7 @@ def worker(directory, stage, week):
             ):
                 expected.add(r.id)
         check(set(mapping) == expected, "unexpected recovery scope")
-        plan = model.json(
-            "Choose the authorized next step. Return action local_archive or stop.",
-            {"context": session.messages()},
-        )
-        check(plan.get("action") == "local_archive", "unexpected plan")
-
-        def pack(n, a):
-            with ZipFile(directory / "Finch.zip", "x") as z:
-                z.write(directory / "app.py", "app.py")
-            return {"created": "Finch.zip"}
-
-        session.dispatch(
-            "local_archive",
-            {"name": "Finch.zip"},
-            lambda n, a: n == "local_archive" and a == {"name": "Finch.zip"},
-            pack,
-        )
+        plan = finish_archive(directory, session, model)
         write(
             directory / "release.json",
             dict(

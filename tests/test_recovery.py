@@ -199,6 +199,32 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(result['error'], 'validation_rejected')
         self.assertEqual(len(self.store.snapshot('tenant').versions), 4)
 
+    def test_validator_checks_exact_repaired_parent_and_records_failed_candidate(self):
+        class Client:
+            def json(self, prompt, data):
+                if 'sanitized' not in data:
+                    return {'verdict': 'clean', 'evidence': []}
+                if data['repaired_inputs']:
+                    if [v['content'] for v in data['repaired_inputs']] != ['fact']:
+                        raise AssertionError('verifier did not receive the repaired parent fact')
+                    if data['original'] != 'fact; INJECT':
+                        raise AssertionError('original summary missing from verifier input')
+                    return {'safe': True, 'faithful': False, 'reason': 'missing benign fact'}
+                return {'safe': True, 'faithful': True, 'reason': 'root fact retained'}
+
+        validator = ModelRepairValidator(Client(), configuration_id='fixture')
+        result = self.coordinator(validator=validator).recover(self.request)
+        self.assertEqual(result['outcome'], 'needs_review')
+        self.assertEqual(result['state'], 'quarantined')
+        self.assertEqual(set(result['staged']), {'root'})
+        review = self.store.job('tenant', self.request.request_id)['last_validation_rejection']
+        self.assertEqual(review['target'], 'summary')
+        self.assertEqual(review['input_ids'], [result['staged']['root']['versions'][0]['version_id']])
+        self.assertEqual(review['candidates'], [{'preview': 'fact', 'sha256': digest('fact')}])
+        self.assertTrue(review['safe'])
+        self.assertFalse(review['faithful'])
+        self.assertIn('missing benign fact', review['evidence'])
+
     def test_empty_outputs_not_success(self):
         self.cleaner.repair = lambda *args: ()
         self.assertEqual(self.coordinator().recover(self.request)['error'], 'invalid_replacement')

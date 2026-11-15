@@ -44,7 +44,11 @@ def invoke_recovery(coordinator, request):
                 return {**result, 'error': None}
             except Exception as exc:
                 code = exc.code if isinstance(exc, RecoveryError) else 'adapter_failed'
-                return {'job':summary(store.fail(request, code)), 'error':code, 'retry_node':name}
+                if isinstance(exc, RecoveryError) and exc.review is not None:
+                    job = store.fail(request, code, review=exc.review)
+                else:
+                    job = store.fail(request, code)
+                return {'job':summary(job), 'error':code, 'retry_node':name}
         return run
 
     def publish(state):

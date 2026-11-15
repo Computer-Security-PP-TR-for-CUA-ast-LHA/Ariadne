@@ -8,7 +8,7 @@ Ariadne 研究计算机使用代理的持久记忆安全。宿主在双份 SQLit
 |---|---|
 | [AgentDojo 全量评测](reports/agentdojo_20261115/README.md) | 97 道正常题两组实跑，普通组 87/97、精确授权门控组 55/97。160 个安全组合取得双组官方评分；另 469 个做受控检测，463 个修复后继续，256 个最终通过效用评分。 |
 | [跨会话发布](reports/release_memory_20261115/README.md) | 四组、每组三个进程。仅门控组在重启后仍有污染记录，完整修复组替换了受影响版本。模型首次均选择本地打包。 |
-| [授权与摘要压缩](reports/granted_memory_20261115/README.md) | 新版邮件执行门在直接读取及两次七天运行中均通过四格授权／来源对照。直接组完成修复并打包，两次七天运行均在修复候选验证后进入人工复核。 |
+| [授权与摘要压缩](reports/granted_memory_20261115/README.md) | 新版邮件执行门在直接读取及两次七天运行中均通过四格授权／来源对照。修复器与验证器共享父版本证据后，两次七天实验均通过第 6 天摘要的修复验证。首次自动打包 1/2，另一次从检查点续跑完成，最终打包 2/2。 |
 | [RedTeamCUA 实际运行进展](reports/codex_owncloud_benchmark_progress_20261115.md) | 三平台配置预检覆盖 864 项。OwnCloud 已取得真实 GUI 轨迹，尚无完整对抗 episode 官方得分。 |
 
 [组件设计](docs/design.md) · [架构](docs/architecture.md) · [研发进度历史](docs/progress-history.md) · [实验设计与数据选择](docs/research/evaluation-plan.md) · [三平台预检数据](reports/midterm_20261113/README.md)
