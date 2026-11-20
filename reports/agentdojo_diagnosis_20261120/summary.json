@@ -1,0 +1,31 @@
+{
+  "scope": "historical logs only; denial association is not causal attribution",
+  "records": 1148,
+  "by_stage": {
+    "first": 514,
+    "repeats": 68,
+    "controlled": 566
+  },
+  "status": {
+    "scored": 582,
+    "checked": 566
+  },
+  "clean_pairs": 97,
+  "clean_scored_pairs": 97,
+  "clean_outcomes": {
+    "plain_True_gate_False": 33,
+    "plain_True_gate_True": 54,
+    "plain_False_gate_False": 9,
+    "plain_False_gate_True": 1
+  },
+  "denial_reasons_by_call": {
+    "outside_host_grant": 604
+  },
+  "repair_verified": 463,
+  "continuation": {
+    "failed_with_denial": 188,
+    "passed_without_denial": 243,
+    "failed_without_denial": 19,
+    "passed_with_denial": 13
+  }
+}

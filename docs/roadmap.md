@@ -1,36 +1,36 @@
-# Implementation roadmap — reuse first
+# 最终答辩研发路线
 
-Updated 2026-11-01 following the project owner's direction. Prefer available original implementations over our minimal core. Keep the old core as a mechanism baseline while upstream components are qualified. Use desktop ChatGPT first; paid API experiments are currently disabled.
+更新：2026-11-20。中期答辩已完成。11 月初的顺序实施路线由以下并行工作线取代；中期数据仍为历史基线，不能当作当前实现的新成绩。
 
-| Phase | Deliverable | Acceptance |
+## 三条并行工作线
+
+| 工作线 | 目标 | 当前依据与下一项验收 |
 |---|---|---|
-| 1 | Integrate reviewed upstream label, provenance, authorization and detection/recovery components | Author/reimplementation identity, license, commit and dependencies recorded; actual upstream checks and adapters validated |
-| 2 | Add RedTeamCUA and lightweight tool benchmarks | Original benign tasks/scorers work; active attacks; equivalent policies and shared contamination checkpoints |
-| 3 | Local desktop ChatGPT integration and real-scenario validation | Supported hook/MCP paths covered; checks before effects and result admission; failure/bypass behavior documented |
-| 4 | Measured upstream patches and contribution candidates | Reproducible counterexamples, original-vs-patched comparisons, utility/regression checks and prior-art review |
+| RedTeamCUA | 跑通真实 GUI 任务、攻击及官方评分 | 11 月 17 日 PPT 报告 runner 链路可运行，但有效任务仍有失败；本次未独立复验新轨迹。先完成 OwnCloud 单例下载/文件生成与两项官方评分，再分层扩展。环境中止与无评分病例单列，不因排除而虚增成功率 |
+| ChatGPT Desktop 接入 | 以 skill、tool 或插件接入，做真实场景测试与验收 | 先核查宿主实际支持能力、受保护工具覆盖、执行前拦截与执行后记录、重启恢复；PPT 中 Codex 接入设想作为备选探索，不能视为 ChatGPT Desktop 已具备同样 hook 能力。提示词 skill 本身不保证强制门控 |
+| AgentDojo 诊断与改进 | 提取逐题证据，修订框架/实现，配对复测安全与效用 | 由本次计划提出者负责。已完成旧日志离线提取；下一项是授权差异与策略版本漂移复现，再补齐新 runner 观测字段和小批复测 |
 
-Suggested workstreams: core/protocol, adapter/environment, attacks/evaluator,
-research/statistics. Owners remain unassigned until the team agrees.
+前两条的成员分工由团队确认，本文件不代为指定。三条线共享任务/动作 ID、标签版本、图与恢复事件、错误分类和指标定义；各自保留环境与评分边界。
 
-## First tasks
+## 第三条工作线里程碑
 
-- P0-01: Pin source identity, license and revision; run original offline checks before modification.
-- P0-02: Qualify OpenAPPA and TMA-NM adapters; preserve actual sanitizer failures and stand-in distinctions.
-- P0-03: Confirm AgentSentry reuse terms and required replay/model interfaces; locate original MemLineage/ChronoMem artifacts.
-- P0-04: Map labels, provenance, revocation, state and effects explicitly. Do not merge incompatible policy semantics by weakening them.
-- P1-01: Run benign and attack tasks through the original benchmark scorers.
-- P1-02: Fork identical post-write checkpoints for recovery comparisons with strong baselines.
-- P1-03: Qualify desktop hook/tool coverage, timeout behavior and context ownership before installing a protection layer.
-- P2-01: Produce independently checkable results and then evaluate patches and novelty.
+| 阶段 | 交付物 | 验收 |
+|---|---|---|
+| D0 数据保全与初筛 | 旧日志索引、哈希、配对结果、失败交叉表 | 已提取 1,148 条记录，97 对正常任务与 463 条修复续行；与中期计数核对 |
+| D1 可复现观测 | 版本/模型/预算清单、完整本地 trace、失败终止分类、开发案例集 | 历史版本与当前版本分离；每项拒绝和评分可以追到同次运行输入，未测项保持缺失 |
+| D2 根因与最小补丁 | 案例→代码责任点→反事实实验；一次修订一个机制 | 合法替代参数可在权限内执行，越权动作仍拒绝；恢复不变量与任务效用分别验收 |
+| D3 冻结后复测 | 97 题回归、独立安全子集、恢复对照与重复实验 | 相同协议报告效用、安全、覆盖率和成本；说明开发集污染、未解决问题及统计不确定性 |
 
-## Current qualification status
+细则见 [AgentDojo 诊断与复测计划](research/agentdojo-diagnosis-plan.md)，首轮依据见 [离线诊断报告](../reports/agentdojo_diagnosis_20261120/README.md)。
 
-Eight source checkouts are locked in `upstream-reuse-lock.json`. The original TMA-NM scope gate and recovery catalog are actually invoked by `scripts/demo_reused_authority.py`. OpenAPPA native Windows policy replay works, while actual email-redactor integration still has an unresolved failure. This is a first integration slice, not a completed unified defense.
+## 实施原则
 
-One integration repository may manage separate environments/sidecars. Existing self-written modules are historical baselines, not silent fallbacks mislabeled as upstream implementations. See `upstream-reuse.md`.
+保留历史基线与原始证据，避免先整体重写架构再寻找解释。源码复用继续记录来源、许可、版本和接口边界；本地适配问题不自动归因于上游。权限检查在最终执行时继续绑定实际参数；修订授权语义不能通过移除安全边界提高通过率。
 
-## Novelty remains hypothetical
+双份标签和局部修复的贡献仍需消融证明；同一宿主内双库不构成独立安全边界。检测、修复、官方评分和真实桌面覆盖各自报告，不合成单一“防御成功率”。
 
-Compare inline-only, ledger-only and two-copy labels under loss, tampering and version drift. Two mutable copies within one trust domain do not create an independent security boundary. Compare graph-local repair with original upstream recovery, root-only deletion, global rollback and clear-all under identical detection and authorization conditions. Measure benign retention, task continuation, recurrence and incomplete dependency capture before claiming precision or novelty.
+## 资源与进度边界
 
-No paid-model budget, remote infrastructure, owner assignment, public license or paper acceptance is implied. Large resources stay on D:; personal files/apps are not automatically removed or terminated. Full benchmark deployment, desktop integration and persistent semantic recovery remain pending.
+旧路线中“付费 API 禁用”是 11 月初的历史状态，之后中期实验已经使用 DeepSeek API，不能继续作为现状描述。本次仅离线再分析，没有新模型调用。新的批量运行先冻结模型、调用预算、并发与停止条件，不从本路线推定无限预算。最终答辩日期未提供，采用里程碑排序，不虚构截止日期。
+
+原有来源审查见 [upstream-reuse.md](upstream-reuse.md) 与 [recovery/reuse-audit.md](recovery/reuse-audit.md)；历史进度见 [progress-history.md](progress-history.md)。

@@ -1,5 +1,7 @@
 # 数据集、数据库与 Baseline 推荐
 
+> **2026-11-20 阶段更新**：中期答辩已完成。以下 11 月初的选型与六周计划保留为历史背景，不代表当前完成状态。当前三条并行线见 [最终答辩路线](../roadmap.md)；AgentDojo 已从备选工具评测进入当前诊断主线，采用 [诊断与复测计划](agentdojo-diagnosis-plan.md) 中的版本隔离、配对对照和恢复指标。RedTeamCUA 与桌面接入继续并行，不能互相替代验收。
+
 > 项目：Ariadne —— Persistent provenance and targeted repair for computer-use agents  
 > 目标：选择环境配置简单、容易复现、能支撑“持久记忆污染—后续动作—定向修复”实验的数据库、评测数据集和 Agent harness。  
 > 方案日期：2026-11-05。主线核查：2026-11-10，配置预检和运行记录见 [研发进度历史](../progress-history.md)。
